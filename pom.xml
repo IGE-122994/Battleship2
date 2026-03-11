@@ -42,7 +42,11 @@
 			<version>${junit.jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
-
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.45.1.0</version>
+		</dependency>
 		<!-- JUnit Jupiter Engine -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
