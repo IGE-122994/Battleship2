@@ -159,7 +159,8 @@ public class Game implements IGame
 	private Integer countSinks;
 	private int moveNumber;
 
-    private Duration totalTime = Duration.ZERO;
+    private GameTimer gameTimer = new GameTimer();
+    private Duration previousAccumulated = Duration.ZERO;
 
     //------------------------------------------------------------------
 	public Game(IFleet myFleet)
@@ -176,6 +177,8 @@ public class Game implements IGame
 		this.countRepeatedShots = 0;
 		this.countHits = 0;
 		this.countSinks = 0;
+
+        gameTimer.begin();
 	}
 
 	@Override
@@ -323,15 +326,9 @@ public class Game implements IGame
 	 * @throws IllegalArgumentException if the list of shots is null, contains an invalid
 	 *                                  number of positions, or includes duplicate positions.
 	 */
-    // ---------------------- INTEGRATED TIMER HERE ----------------------
     public void fireShots(List<IPosition> shots)
     {
         assert shots != null;
-
-        PlayTimer timer = new PlayTimer();
-
-        long fallbackBeginning = System.currentTimeMillis();
-        timer.begin();
 
         List<ShotResult> shotResults = new ArrayList<>();
         if (shots.size() != NUMBER_SHOTS) {
@@ -354,40 +351,11 @@ public class Game implements IGame
 
         moveNumber++;
 
-        // ---------------------- ENDING THE TIMER HERE ----------------------
-        try {
-            timer.end();
-            Duration dur = timer.getDuration();
-            totalTime = totalTime.plus(dur);
-
-            String durStr = formatDuration(dur);
-            String totalStr = formatDuration(totalTime);
-
-            System.out.println("Duração da jogada: " + durStr);
-            System.out.println("Duração acumulada: " + totalStr);
-
-        } catch (Exception e) {
-            long fallbackEnding = System.currentTimeMillis();
-            long ms = fallbackEnding - fallbackBeginning;
-
-            Duration dur = Duration.millis(ms);
-            totalTime = totalTime.plus(dur);
-
-            String durStr = formatDuration(dur);
-            String totalStr = formatDuration(totalTime);
-
-            System.out.println("Duração da jogada: " + durStr);
-            System.out.println("Duração acumulada: " + totalStr);
-        }
-
-    }
-    // --------------------------------------------------------------------
-
-    private String formatDuration(Duration d) {
-        long totalMs = d.getMillis();
-        long s = totalMs / 1000;
-        long ms = totalMs % 1000;
-        return String.format("%d.%03ds", s, ms);
+        Duration accumulated = gameTimer.getDuration();
+        Duration turnDuration = accumulated.minus(previousAccumulated);
+        previousAccumulated = accumulated;
+        System.out.println("Duração da jogada: " + GameTimer.formatDuration(turnDuration));
+        System.out.println("Duração acumulada: " + GameTimer.formatDuration(accumulated));
     }
 
     /**
@@ -485,7 +453,8 @@ public class Game implements IGame
         System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
         System.out.println("+--------------------------------------------------------------+");
 
-        System.out.println("Duração total do jogo: " + formatDuration(totalTime));
+        gameTimer.end();
+        System.out.println("Duração da partida: " + GameTimer.formatDuration(gameTimer.getDuration()));
     }
 
 }
