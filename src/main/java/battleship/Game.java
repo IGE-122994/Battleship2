@@ -4,11 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
+import org.joda.time.Duration;
+
 import java.util.*;
 
 public class Game implements IGame
 {
-	/**
+    /**
 	 * Prints the game board by representing the positions of ships, adjacent tiles,
 	 * shots, and other game elements onto the console. The method also optionally
 	 * displays shot positions and a legend explaining the symbols used on the board.
@@ -157,7 +159,9 @@ public class Game implements IGame
 	private Integer countSinks;
 	private int moveNumber;
 
-	//------------------------------------------------------------------
+    private Duration totalTime = Duration.ZERO;
+
+    //------------------------------------------------------------------
 	public Game(IFleet myFleet)
 	{
 		this.moveNumber = 1;
@@ -199,7 +203,7 @@ public class Game implements IGame
 	}
 
 	/**
-	 * Simulates a random firing action by the enemy, generating a set of unique shot coordinates
+	 *  Simulates a random firing action by the enemy, generating a set of unique shot coordinates
 	 * and serializing them into a JSON string. The method ensures that the random shots are valid
 	 * and do not duplicate existing shots in the game or previous enemy moves. After generating
 	 * the shots, it applies the firing logic and serializes the result for further processing.
@@ -319,33 +323,74 @@ public class Game implements IGame
 	 * @throws IllegalArgumentException if the list of shots is null, contains an invalid
 	 *                                  number of positions, or includes duplicate positions.
 	 */
-	public void fireShots(List<IPosition> shots)
-	{
-		assert shots != null;
+    // ---------------------- INTEGRATED TIMER HERE ----------------------
+    public void fireShots(List<IPosition> shots)
+    {
+        assert shots != null;
 
-		List<ShotResult> shotResults = new ArrayList<ShotResult>();
-		if (shots.size() != NUMBER_SHOTS) {
-			throw new IllegalArgumentException("Must fire exactly " + NUMBER_SHOTS + " shots per move.");
-		}
+        PlayTimer timer = new PlayTimer();
 
-		List<IPosition> alreadyShot = new ArrayList<IPosition>();
-		for (IPosition pos : shots) {
-			shotResults.add(fireSingleShot(pos, alreadyShot.contains(pos)));
-			alreadyShot.add(pos);
-		}
+        long fallbackBeginning = System.currentTimeMillis();
+        timer.begin();
 
-		Move move = new Move(moveNumber, shots, shotResults);
+        List<ShotResult> shotResults = new ArrayList<>();
+        if (shots.size() != NUMBER_SHOTS) {
+            throw new IllegalArgumentException("Você deve atirar exatamente " + NUMBER_SHOTS + " tiros por jogada.");
+        }
+
+        List<IPosition> alreadyShot = new ArrayList<>();
+        for (IPosition pos : shots) {
+            shotResults.add(fireSingleShot(pos, alreadyShot.contains(pos)));
+            alreadyShot.add(pos);
+        }
+
+        Move move = new Move(moveNumber, shots, shotResults);
 
 //		System.out.println(move);
 
-		move.processEnemyFire(true);
+        move.processEnemyFire(true);
 
-		alienMoves.add(move);
+        alienMoves.add(move);
 
-		moveNumber++;
-	}
+        moveNumber++;
 
-	/**
+        // ---------------------- ENDING THE TIMER HERE ----------------------
+        try {
+            timer.end();
+            Duration dur = timer.getDuration();
+            totalTime = totalTime.plus(dur);
+
+            String durStr = formatDuration(dur);
+            String totalStr = formatDuration(totalTime);
+
+            System.out.println("Duração da jogada: " + durStr);
+            System.out.println("Duração acumulada: " + totalStr);
+
+        } catch (Exception e) {
+            long fallbackEnding = System.currentTimeMillis();
+            long ms = fallbackEnding - fallbackBeginning;
+
+            Duration dur = Duration.millis(ms);
+            totalTime = totalTime.plus(dur);
+
+            String durStr = formatDuration(dur);
+            String totalStr = formatDuration(totalTime);
+
+            System.out.println("Duração da jogada: " + durStr);
+            System.out.println("Duração acumulada: " + totalStr);
+        }
+
+    }
+    // --------------------------------------------------------------------
+
+    private String formatDuration(Duration d) {
+        long totalMs = d.getMillis();
+        long s = totalMs / 1000;
+        long ms = totalMs % 1000;
+        return String.format("%d.%03ds", s, ms);
+    }
+
+    /**
 	 * Fires a single shot at the specified position, handling scenarios such as invalid positions,
 	 * repeated shots, hits, misses, and sinking a ship. The method updates the necessary counters
 	 * for invalid shots, repeated shots, hits, and sunk ships.
@@ -434,10 +479,13 @@ public class Game implements IGame
 		Game.printBoard(this.alienFleet, this.myMoves, show_shots, show_legend);
 	}
 
-	public void over() {
-			System.out.println();
-			System.out.println("+--------------------------------------------------------------+");
-			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
-			System.out.println("+--------------------------------------------------------------+");
-	}
+    public void over() {
+        System.out.println();
+        System.out.println("+--------------------------------------------------------------+");
+        System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
+        System.out.println("+--------------------------------------------------------------+");
+
+        System.out.println("Duração total do jogo: " + formatDuration(totalTime));
+    }
+
 }
