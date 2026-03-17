@@ -1,6 +1,7 @@
 /**
  * 
  */
+
 package battleship;
 
 /**
@@ -17,8 +18,10 @@ public class Main
 	 *
 	 * @param args the args
 	 */
+
 	public static void main(String[] args)
     {
+		DatabaseManager.initializeDatabase();
 		System.out.println("***  Battleship  ***");
 
 		Tasks.menu();

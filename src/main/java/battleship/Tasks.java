@@ -80,8 +80,10 @@ public class Tasks {
 					break;
 				case SIMULA:
 					if (game != null) {
+						int contadorTiros = 0;
 						while (game.getRemainingShips() > 0){
 							game.randomEnemyFire();
+							contadorTiros++;
 							myFleet.printStatus();
 							game.printMyBoard(true, false);
 							try {
@@ -93,6 +95,7 @@ public class Tasks {
 
 						if (game.getRemainingShips() == 0) {
 							game.over();
+							DatabaseManager.saveGameResult("Computador (Simulação)", contadorTiros);
 							System.exit(0);
 						}
 					}

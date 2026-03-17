@@ -458,23 +458,11 @@ public class Game implements IGame
 		Game.printBoard(this.alienFleet, this.myMoves, show_shots, show_legend);
 	}
 
-    /**
-     * Finalizes the game, prints a closing message and displays the total duration
-     * of the match.
-     *
-     * <p>
-     * This method stops the {@link GameTimer}, retrieves the total elapsed time
-     * since the beginning of the game, and prints it in a human-readable format.
-     * </p>
-     */
-    public void over() {
-        System.out.println();
-        System.out.println("+--------------------------------------------------------------+");
-        System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
-        System.out.println("+--------------------------------------------------------------+");
-
-        gameTimer.end();
-        System.out.println("Duração da partida: " + GameTimer.formatDuration(gameTimer.getDuration()));
-    }
-
+	public void over() {
+			System.out.println();
+			System.out.println("+--------------------------------------------------------------+");
+			System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
+			System.out.println("+--------------------------------------------------------------+");
+			GameReportPDF.generate(this);
+	}
 }
