@@ -319,6 +319,17 @@ public class Game implements IGame
 	 * consolidated into a move, which is processed and added to the list of alien moves.
 	 * The method ensures exactly {@code NUMBER_SHOTS} shots are fired, validates
 	 * each shot's position, and increments the move counter after completing the operation.
+     *
+     * <p>
+     * This method also updates the game's timing information. After resolving the
+     * move, the method:
+     * <ul>
+     *     <li>Retrieves the total accumulated game duration from the {@code GameTimer}</li>
+     *     <li>Computes the duration of the current turn by subtracting the previously
+     *         accumulated duration</li>
+     *     <li>Prints both the turn duration and the updated accumulated duration</li>
+     * </ul>
+     * </p>
 	 *
 	 * @param shots a list of positions representing the locations to fire shots at.
 	 *              The positions should be unique and valid within the bounds of the game board.
@@ -447,6 +458,15 @@ public class Game implements IGame
 		Game.printBoard(this.alienFleet, this.myMoves, show_shots, show_legend);
 	}
 
+    /**
+     * Finalizes the game, prints a closing message and displays the total duration
+     * of the match.
+     *
+     * <p>
+     * This method stops the {@link GameTimer}, retrieves the total elapsed time
+     * since the beginning of the game, and prints it in a human-readable format.
+     * </p>
+     */
     public void over() {
         System.out.println();
         System.out.println("+--------------------------------------------------------------+");
