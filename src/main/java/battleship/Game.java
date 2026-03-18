@@ -10,7 +10,7 @@ import java.util.*;
 
 public class Game implements IGame
 {
-    /**
+	/**
 	 * Prints the game board by representing the positions of ships, adjacent tiles,
 	 * shots, and other game elements onto the console. The method also optionally
 	 * displays shot positions and a legend explaining the symbols used on the board.
@@ -159,10 +159,10 @@ public class Game implements IGame
 	private Integer countSinks;
 	private int moveNumber;
 
-    private GameTimer gameTimer = new GameTimer();
-    private Duration previousAccumulated = Duration.ZERO;
+	private GameTimer gameTimer = new GameTimer();
+	private Duration previousAccumulated = Duration.ZERO;
 
-    //------------------------------------------------------------------
+	//------------------------------------------------------------------
 	public Game(IFleet myFleet)
 	{
 		this.moveNumber = 1;
@@ -178,7 +178,7 @@ public class Game implements IGame
 		this.countHits = 0;
 		this.countSinks = 0;
 
-        gameTimer.begin();
+		gameTimer.begin();
 	}
 
 	@Override
@@ -319,17 +319,17 @@ public class Game implements IGame
 	 * consolidated into a move, which is processed and added to the list of alien moves.
 	 * The method ensures exactly {@code NUMBER_SHOTS} shots are fired, validates
 	 * each shot's position, and increments the move counter after completing the operation.
-     *
-     * <p>
-     * This method also updates the game's timing information. After resolving the
-     * move, the method:
-     * <ul>
-     *     <li>Retrieves the total accumulated game duration from the {@code GameTimer}</li>
-     *     <li>Computes the duration of the current turn by subtracting the previously
-     *         accumulated duration</li>
-     *     <li>Prints both the turn duration and the updated accumulated duration</li>
-     * </ul>
-     * </p>
+	 *
+	 * <p>
+	 * This method also updates the game's timing information. After resolving the
+	 * move, the method:
+	 * <ul>
+	 *     <li>Retrieves the total accumulated game duration from the {@code GameTimer}</li>
+	 *     <li>Computes the duration of the current turn by subtracting the previously
+	 *         accumulated duration</li>
+	 *     <li>Prints both the turn duration and the updated accumulated duration</li>
+	 * </ul>
+	 * </p>
 	 *
 	 * @param shots a list of positions representing the locations to fire shots at.
 	 *              The positions should be unique and valid within the bounds of the game board.
@@ -337,39 +337,39 @@ public class Game implements IGame
 	 * @throws IllegalArgumentException if the list of shots is null, contains an invalid
 	 *                                  number of positions, or includes duplicate positions.
 	 */
-    public void fireShots(List<IPosition> shots)
-    {
-        assert shots != null;
+	public void fireShots(List<IPosition> shots)
+	{
+		assert shots != null;
 
-        List<ShotResult> shotResults = new ArrayList<>();
-        if (shots.size() != NUMBER_SHOTS) {
-            throw new IllegalArgumentException("Você deve atirar exatamente " + NUMBER_SHOTS + " tiros por jogada.");
-        }
+		List<ShotResult> shotResults = new ArrayList<>();
+		if (shots.size() != NUMBER_SHOTS) {
+			throw new IllegalArgumentException("Você deve atirar exatamente " + NUMBER_SHOTS + " tiros por jogada.");
+		}
 
-        List<IPosition> alreadyShot = new ArrayList<>();
-        for (IPosition pos : shots) {
-            shotResults.add(fireSingleShot(pos, alreadyShot.contains(pos)));
-            alreadyShot.add(pos);
-        }
+		List<IPosition> alreadyShot = new ArrayList<>();
+		for (IPosition pos : shots) {
+			shotResults.add(fireSingleShot(pos, alreadyShot.contains(pos)));
+			alreadyShot.add(pos);
+		}
 
-        Move move = new Move(moveNumber, shots, shotResults);
+		Move move = new Move(moveNumber, shots, shotResults);
 
 //		System.out.println(move);
 
-        move.processEnemyFire(true);
+		move.processEnemyFire(true);
 
-        alienMoves.add(move);
+		alienMoves.add(move);
 
-        moveNumber++;
+		moveNumber++;
 
-        Duration accumulated = gameTimer.getDuration();
-        Duration turnDuration = accumulated.minus(previousAccumulated);
-        previousAccumulated = accumulated;
-        System.out.println("Duração da jogada: " + GameTimer.formatDuration(turnDuration));
-        System.out.println("Duração acumulada: " + GameTimer.formatDuration(accumulated));
-    }
+		Duration accumulated = gameTimer.getDuration();
+		Duration turnDuration = accumulated.minus(previousAccumulated);
+		previousAccumulated = accumulated;
+		System.out.println("Duração da jogada: " + GameTimer.formatDuration(turnDuration));
+		System.out.println("Duração acumulada: " + GameTimer.formatDuration(accumulated));
+	}
 
-    /**
+	/**
 	 * Fires a single shot at the specified position, handling scenarios such as invalid positions,
 	 * repeated shots, hits, misses, and sinking a ship. The method updates the necessary counters
 	 * for invalid shots, repeated shots, hits, and sunk ships.
@@ -458,25 +458,26 @@ public class Game implements IGame
 		Game.printBoard(this.alienFleet, this.myMoves, show_shots, show_legend);
 	}
 
-    /**
-     * Finalizes the game, prints a closing message and displays the total duration
-     * of the match.
-     *
-     * <p>
-     * This method stops the {@link GameTimer}, retrieves the total elapsed time
-     * since the beginning of the game, and prints it in a human-readable format.
-     * </p>
-     */
-    public void over() {
-        System.out.println();
-        System.out.println("+--------------------------------------------------------------+");
-        System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
-        System.out.println("+--------------------------------------------------------------+");
+	/**
+	 * Finalizes the game, prints a closing message and displays the total duration
+	 * of the match.
+	 *
+	 * <p>
+	 * This method stops the {@link GameTimer}, retrieves the total elapsed time
+	 * since the beginning of the game, and prints it in a human-readable format.
+	 * </p>
+	 */
+	public void over() {
+		System.out.println();
+		System.out.println("+--------------------------------------------------------------+");
+		System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
+		System.out.println("+--------------------------------------------------------------+");
 
-        GameReportPDF.generate(this);
+		gameTimer.end();
+		String totalDuration = GameTimer.formatDuration(gameTimer.getDuration());
+		System.out.println("Duração da partida: " + totalDuration);
 
-        gameTimer.end();
-        System.out.println("Duração da partida: " + GameTimer.formatDuration(gameTimer.getDuration()));
-    }
+		GameReportPDF.generate(this, totalDuration);
+	}
 
 }
