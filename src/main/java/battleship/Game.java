@@ -8,16 +8,36 @@ import org.joda.time.Duration;
 
 import java.util.*;
 
+/**
+ * Represents the Battleship game, managing player and enemy boards,
+ * shots, ships, and game state.
+ *
+ * <p>This class provides methods to print boards, handle player and enemy shots,
+ * generate random enemy shots, serialize positions to JSON, and track
+ * game statistics such as valid shots, repeated shots, hits, and sunk ships.</p>
+ */
 public class Game implements IGame {
 
     //------------------------------------------------------------------
+    /** Size of the game board (number of rows and columns). */
     public static final int BOARD_SIZE = 10;
+
+    /** Number of shots per move. */
     public static final int NUMBER_SHOTS = 3;
 
+    /** Character representing empty water on the board. */
     private static final char EMPTY_MARKER = '.';
+
+    /** Character representing an intact ship on the board. */
     private static final char SHIP_MARKER = '#';
+
+    /** Character representing a successful hit on a ship. */
     private static final char SHOT_SHIP_MARKER = '*';
+
+    /** Character representing a shot that hit water. */
     private static final char SHOT_WATER_MARKER = 'o';
+
+    /** Character representing a tile adjacent to a ship. */
     private static final char SHIP_ADJACENT_MARKER = '-';
 
     //------------------------------------------------------------------
@@ -37,37 +57,66 @@ public class Game implements IGame {
     private Duration previousAccumulated = Duration.ZERO;
 
     //------------------------------------------------------------------
+    /**
+     * Constructs a new game instance with the player's fleet.
+     *
+     * @param myFleet the fleet of the player containing the ships.
+     */
     public Game(IFleet myFleet) {
         this.moveNumber = 1;
-
         this.alienMoves = new ArrayList<>();
         this.myMoves = new ArrayList<>();
-
         this.alienFleet = new Fleet();
         this.myFleet = myFleet;
-
         this.countInvalidShots = 0;
         this.countRepeatedShots = 0;
         this.countHits = 0;
         this.countSinks = 0;
-
         gameTimer.begin();
     }
 
     //------------------------------------------------------------------
+    /**
+     * Returns the player's fleet.
+     *
+     * @return the player's fleet.
+     */
     @Override
     public IFleet getMyFleet() { return myFleet; }
 
+    /**
+     * Returns the list of moves made by the enemy.
+     *
+     * @return list of enemy moves.
+     */
     @Override
     public List<IMove> getAlienMoves() { return alienMoves; }
 
+    /**
+     * Returns the enemy fleet.
+     *
+     * @return the enemy fleet.
+     */
     @Override
     public IFleet getAlienFleet() { return alienFleet; }
 
+    /**
+     * Returns the list of moves made by the player.
+     *
+     * @return list of player moves.
+     */
     @Override
     public List<IMove> getMyMoves() { return myMoves; }
 
     //------------------------------------------------------------------
+    /**
+     * Prints a representation of the game board to the console.
+     *
+     * @param fleet       the fleet to display on the board.
+     * @param moves       list of moves that include shots to be displayed.
+     * @param show_shots  if true, marks shots on the board.
+     * @param showLegend  if true, displays a legend explaining symbols.
+     */
     public static void printBoard(IFleet fleet, List<IMove> moves, boolean show_shots, boolean showLegend) {
         assert fleet != null;
         assert moves != null;
@@ -127,6 +176,13 @@ public class Game implements IGame {
         System.out.println();
     }
 
+    /**
+     * Serializes a list of shot positions to a formatted JSON string.
+     *
+     * @param shots list of positions to serialize.
+     * @return JSON string representing the shot positions.
+     * @throws RuntimeException if JSON serialization fails.
+     */
     public static String jsonShots(List<IPosition> shots) {
         assert shots != null;
 
@@ -149,6 +205,13 @@ public class Game implements IGame {
     }
 
     //------------------------------------------------------------------
+    /**
+     * Generates random shots for the enemy, ensuring they are valid and unique.
+     * Applies the shots to the player's fleet and returns the JSON representation.
+     *
+     * @return JSON string representing enemy shots.
+     * @throws RuntimeException if serialization fails.
+     */
     public String randomEnemyFire() {
         Random random = new Random(System.currentTimeMillis());
 
@@ -185,6 +248,14 @@ public class Game implements IGame {
         return jsonShots(shots);
     }
 
+    /**
+     * Reads enemy fire input from a scanner, validates positions, applies the shots,
+     * and returns their JSON representation.
+     *
+     * @param in Scanner to read enemy input.
+     * @return JSON string of enemy shots.
+     * @throws IllegalArgumentException if input is invalid or incomplete.
+     */
     public String readEnemyFire(Scanner in) {
         assert in != null;
 
@@ -213,6 +284,12 @@ public class Game implements IGame {
         return jsonShots(shots);
     }
 
+    /**
+     * Fires a list of shots, updates game statistics, and prints turn and total durations.
+     *
+     * @param shots list of positions to fire.
+     * @throws IllegalArgumentException if the number of shots is invalid.
+     */
     public void fireShots(List<IPosition> shots) {
         assert shots != null;
 
@@ -238,6 +315,13 @@ public class Game implements IGame {
         System.out.println(MessageManager.get("game.totalDuration", GameTimer.formatDuration(accumulated)));
     }
 
+    /**
+     * Fires a single shot at a specified position.
+     *
+     * @param pos the position to shoot.
+     * @param isRepeated true if the shot is a repeat, false otherwise.
+     * @return ShotResult containing the result of the shot.
+     */
     public ShotResult fireSingleShot(IPosition pos, boolean isRepeated) {
         assert pos != null;
 
@@ -260,20 +344,42 @@ public class Game implements IGame {
     @Override public int getSunkShips() { return countSinks; }
     @Override public int getRemainingShips() { return myFleet.getFloatingShips().size(); }
 
+    /**
+     * Checks if a given position has already been shot by the enemy.
+     *
+     * @param pos position to check.
+     * @return true if the position has already been shot, false otherwise.
+     */
     public boolean repeatedShot(IPosition pos) {
         assert pos != null;
         for (IMove move : alienMoves) if (move.getShots().contains(pos)) return true;
         return false;
     }
 
+    /**
+     * Prints the player's board to the console.
+     *
+     * @param show_shots  whether to show shots.
+     * @param show_legend whether to show the legend.
+     */
     public void printMyBoard(boolean show_shots, boolean show_legend) {
         printBoard(myFleet, alienMoves, show_shots, show_legend);
     }
 
+    /**
+     * Prints the enemy's board to the console.
+     *
+     * @param show_shots  whether to show shots.
+     * @param show_legend whether to show the legend.
+     */
     public void printAlienBoard(boolean show_shots, boolean show_legend) {
         printBoard(alienFleet, myMoves, show_shots, show_legend);
     }
 
+    /**
+     * Ends the game, prints a closing message, generates a PDF report,
+     * and displays the total game duration.
+     */
     public void over() {
         System.out.println();
         System.out.println("+--------------------------------------------------------------+");

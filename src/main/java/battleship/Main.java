@@ -13,6 +13,12 @@ import java.util.Scanner;
  */
 public class Main {
 
+    /**
+     * Main.
+     *
+     * @param args the args
+     */
+
     public static void main(String[] args) {
         DatabaseManager.initializeDatabase();
 
