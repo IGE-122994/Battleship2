@@ -473,10 +473,11 @@ public class Game implements IGame
         System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
         System.out.println("+--------------------------------------------------------------+");
 
-        GameReportPDF.generate(this);
-
         gameTimer.end();
-        System.out.println("Duração da partida: " + GameTimer.formatDuration(gameTimer.getDuration()));
+        String totalDuration = GameTimer.formatDuration(gameTimer.getDuration());
+        System.out.println("Duração da partida: " + totalDuration);
+
+        GameReportPDF.generate(this, totalDuration);
     }
 
 }
