@@ -84,9 +84,8 @@ public class Game implements IGame
 		System.out.println("-+");
 
 		if (showLegend) {
-			System.out.println("          LEGENDA");
-			System.out.println("'" + SHIP_MARKER + "'->navio, '" + SHIP_ADJACENT_MARKER + "'->adjacente a navio, '" + EMPTY_MARKER + "'->água");
-			System.out.println("'" + SHOT_SHIP_MARKER + "'->Tiro certeiro, '" + SHOT_WATER_MARKER + "'->Tiro na água");
+            System.out.println(MessageManager.get("game.legend.line1", SHIP_MARKER, SHIP_ADJACENT_MARKER, EMPTY_MARKER));
+            System.out.println(MessageManager.get("game.legend.line2", SHOT_SHIP_MARKER, SHOT_WATER_MARKER));
 		}
 		System.out.println();
 	}
@@ -126,7 +125,7 @@ public class Game implements IGame
 			// 2. Serialize the simplified list instead of the raw 'shots' list
 			jsonString = objectMapper.writeValueAsString(simplifiedShots);
 		} catch (JsonProcessingException e) {
-			throw new RuntimeException("Erro ao serializar o JSON", e);
+			throw new RuntimeException(MessageManager.get("error.jsonShots"), e);
 		}
 
 //		System.out.println(jsonString);
@@ -163,7 +162,12 @@ public class Game implements IGame
 	private Duration previousAccumulated = Duration.ZERO;
 
 	//------------------------------------------------------------------
-	public Game(IFleet myFleet)
+    /**
+     * Constructs a new game instance with the player's fleet.
+     *
+     * @param myFleet the fleet of the player containing the ships.
+     */
+    public Game(IFleet myFleet)
 	{
 		this.moveNumber = 1;
 
@@ -181,24 +185,44 @@ public class Game implements IGame
 		gameTimer.begin();
 	}
 
+    /**
+     * Returns the player's fleet.
+     *
+     * @return the player's fleet.
+     */
 	@Override
 	public IFleet getMyFleet()
 	{
 		return myFleet;
 	}
 
+    /**
+     * Returns the list of moves made by the enemy.
+     *
+     * @return list of enemy moves.
+     */
 	@Override
 	public List<IMove> getAlienMoves()
 	{
 		return alienMoves;
 	}
 
+    /**
+     * Returns the enemy fleet.
+     *
+     * @return the enemy fleet.
+     */
 	@Override
 	public IFleet getAlienFleet()
 	{
 		return myFleet;
 	}
 
+    /**
+     * Returns the list of moves made by the player.
+     *
+     * @return list of player moves.
+     */
 	@Override
 	public List<IMove> getMyMoves()
 	{
@@ -252,7 +276,7 @@ public class Game implements IGame
 				shots.add(newShot);
 		}
 
-		System.out.print("rajada ");
+        System.out.println(MessageManager.get("game.burst"));
 		for (IPosition shot : shots)
 			System.out.print(shot + " ");
 		System.out.println();
@@ -296,7 +320,7 @@ public class Game implements IGame
 					int row = inputScanner.nextInt();
 					shots.add(new Position(token.toUpperCase().charAt(0), row));
 				} else {
-					throw new IllegalArgumentException("Posição incompleta! A coluna '" + token + "' não é seguida por uma linha.");
+					throw new IllegalArgumentException(MessageManager.get("error.incompletePosition", token));
 				}
 			} else {
 				// Caso o token já contenha a coluna e a linha juntas (ex.: "A3")
@@ -306,7 +330,7 @@ public class Game implements IGame
 		}
 
 		if (shots.size() != NUMBER_SHOTS) {
-			throw new IllegalArgumentException("Você deve inserir exatamente " + NUMBER_SHOTS + " posições!");
+			throw new IllegalArgumentException(MessageManager.get("error.invalidPositions", NUMBER_SHOTS));
 		}
 
 		this.fireShots(shots);
@@ -343,7 +367,7 @@ public class Game implements IGame
 
 		List<ShotResult> shotResults = new ArrayList<>();
 		if (shots.size() != NUMBER_SHOTS) {
-			throw new IllegalArgumentException("Você deve atirar exatamente " + NUMBER_SHOTS + " tiros por jogada.");
+			throw new IllegalArgumentException(MessageManager.get("error.invalidShots", NUMBER_SHOTS));
 		}
 
 		List<IPosition> alreadyShot = new ArrayList<>();
@@ -365,8 +389,8 @@ public class Game implements IGame
 		Duration accumulated = gameTimer.getDuration();
 		Duration turnDuration = accumulated.minus(previousAccumulated);
 		previousAccumulated = accumulated;
-		System.out.println("Duração da jogada: " + GameTimer.formatDuration(turnDuration));
-		System.out.println("Duração acumulada: " + GameTimer.formatDuration(accumulated));
+        System.out.println(MessageManager.get("game.turnDuration", GameTimer.formatDuration(turnDuration)));
+        System.out.println(MessageManager.get("game.accumulatedDuration", GameTimer.formatDuration(accumulated)));
 	}
 
 	/**
@@ -438,6 +462,12 @@ public class Game implements IGame
 		return floatingShips.size();
 	}
 
+    /**
+     * Checks if a given position has already been shot by the enemy.
+     *
+     * @param pos position to check.
+     * @return true if the position has already been shot, false otherwise.
+     */
 	public boolean repeatedShot(IPosition pos)
 	{
 		assert pos != null;
@@ -448,34 +478,53 @@ public class Game implements IGame
 		return false;
 	}
 
+    /**
+     * Prints the player's board to the console.
+     *
+     * @param show_shots  whether to show shots.
+     * @param show_legend whether to show the legend.
+     */
 	public void printMyBoard(boolean show_shots, boolean show_legend)
 	{
 		Game.printBoard(this.myFleet, this.alienMoves, show_shots, show_legend);
 	}
 
+    /**
+     * Prints the enemy's board to the console.
+     *
+     * @param show_shots  whether to show shots.
+     * @param show_legend whether to show the legend.
+     */
 	public void printAlienBoard(boolean show_shots, boolean show_legend)
 	{
 		Game.printBoard(this.alienFleet, this.myMoves, show_shots, show_legend);
 	}
 
-	/**
-	 * Finalizes the game, prints a closing message and displays the total duration
-	 * of the match.
-	 *
-	 * <p>
-	 * This method stops the {@link GameTimer}, retrieves the total elapsed time
-	 * since the beginning of the game, and prints it in a human-readable format.
-	 * </p>
-	 */
-	public void over() {
+    /**
+     * Finalizes the game, prints a closing message and displays the total duration
+     * of the match.
+     *
+     * <p>
+     * This method stops the {@link GameTimer}, retrieves the total elapsed time
+     * since the beginning of the game, and prints it in a human-readable format.
+     * </p>
+     *
+     * <p>
+     * After displaying the final information, this method also generates a PDF
+     * report of the match using {@link GameReportPDF}. The report includes relevant
+     * game data and the total duration, allowing the user to keep a permanent
+     * record of the session.
+     * </p>
+     */
+    public void over() {
 		System.out.println();
 		System.out.println("+--------------------------------------------------------------+");
-		System.out.println("| Maldito sejas, Java Sparrow, eu voltarei, glub glub glub ... |");
+		System.out.println("| " + MessageManager.get("game.over") + " |");
 		System.out.println("+--------------------------------------------------------------+");
 
 		gameTimer.end();
 		String totalDuration = GameTimer.formatDuration(gameTimer.getDuration());
-		System.out.println("Duração da partida: " + totalDuration);
+        System.out.println(MessageManager.get("game.totalDuration", totalDuration));
 
 		GameReportPDF.generate(this, totalDuration);
 	}
