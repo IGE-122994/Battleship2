@@ -35,7 +35,9 @@ public class Tasks {
 
 		IFleet myFleet = null;
 		IGame game = null;
+		int meusTiros = 0;
 		menuHelp();
+
 
 		System.out.print(MessageManager.get("menu.prompt"));
 		Scanner in = new Scanner(System.in);
@@ -46,11 +48,13 @@ public class Tasks {
 				case GERAFROTA:
 					myFleet = Fleet.createRandom();
 					game = new Game(myFleet);
+					meusTiros= 0;
 					game.printMyBoard(false, true);
 					break;
 				case LEFROTA:
 					myFleet = buildFleet(in);
 					game = new Game(myFleet);
+					meusTiros= 0;
 					game.printMyBoard(false, true);
 					break;
 				case STATUS:
@@ -64,11 +68,13 @@ public class Tasks {
 				case RAJADA:
 					if (game != null) {
 						game.readEnemyFire(in);
+						meusTiros +=3;
 						myFleet.printStatus();
 						game.printMyBoard(true, false);
 
 						if (game.getRemainingShips() == 0) {
 							game.over();
+							DatabaseManager.saveGameResult("Jogador", meusTiros);
 							System.exit(0);
 						}
 					}
