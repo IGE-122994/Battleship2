@@ -1,5 +1,6 @@
 package battleship;
 
+import java.util.List;
 import java.util.Scanner;
 
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +28,7 @@ public class Tasks {
 	private static final String MAPA = "mapa";
 	private static final String STATUS = "estado";
 	private static final String SIMULA = "simula";
+	private static final String LLM = "llm";
 
 	/**
 	 * This task also tests the fighting element of a round of three shots
@@ -105,9 +107,41 @@ public class Tasks {
 					if (game != null)
 						game.printMyBoard(true, true);
 					break;
-                case AJUDA:
-                    menuHelp();
-                    break;
+				case LLM:
+					if (game != null) {
+						HuggingFaceClient llmClient = new HuggingFaceClient();
+						try {
+							llmClient.initialize();
+							System.out.println("A jogar contra o LLM...");
+							int failCount = 0;
+							while (game.getRemainingShips() > 0 && failCount < 5) {
+								String history = HuggingFaceClient.buildGameHistory(game.getAlienMoves());
+								try {
+									List<IPosition> shots = llmClient.getNextMove(history);
+									game.fireShots(shots);
+									myFleet.printStatus();
+									game.printMyBoard(true, false);
+									failCount = 0;
+									if (game.getRemainingShips() == 0) {
+										game.over();
+										System.exit(0);
+									}
+								} catch (Exception e) {
+									failCount++;
+									System.err.println("Erro na jogada (" + failCount + "/5): " + e.getMessage());
+								}
+							}
+							if (game.getRemainingShips() > 0) {
+								System.out.println("LLM desistiu após erros consecutivos.");
+							}
+						} catch (Exception e) {
+							System.err.println("Erro na comunicação com o LLM: " + e.getMessage());
+						}
+					}
+					break;
+				case AJUDA:
+					menuHelp();
+					break;
 				default:
 					System.out.println(MessageManager.get("menu.invalidCommand"));
 			}
@@ -132,6 +166,7 @@ public class Tasks {
         System.out.println(MessageManager.get("menu.help.tiros"));
         System.out.println(MessageManager.get("menu.help.desisto"));
         System.out.println(MessageManager.get("menu.help.footer"));
+        System.out.println("- " + LLM + ": Joga automaticamente contra o LLM do Hugging Face.");
 	}
 	/**
 	 * This operation allows the build up of a fleet, given user data
