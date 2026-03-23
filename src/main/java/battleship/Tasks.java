@@ -165,8 +165,8 @@ public class Tasks {
         System.out.println(MessageManager.get("menu.help.simula"));
         System.out.println(MessageManager.get("menu.help.tiros"));
         System.out.println(MessageManager.get("menu.help.desisto"));
+		System.out.println("- " + LLM + ": Joga automaticamente contra o LLM do Hugging Face.");
         System.out.println(MessageManager.get("menu.help.footer"));
-        System.out.println("- " + LLM + ": Joga automaticamente contra o LLM do Hugging Face.");
 	}
 	/**
 	 * This operation allows the build up of a fleet, given user data
