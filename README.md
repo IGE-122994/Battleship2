@@ -146,6 +146,30 @@ Contributions are what make the open-source community such an amazing place to l
 ## 📄 License
 Distributed under the MIT License. See `LICENSE` for more information.
 
+# Prompt para IA
+Considere agora a seguinte tática de geração de rajadas de tiros:
+## Diário de Bordo
+Crie um Diário de Bordo com o registo de cada rajada disparada, numerando-as sequencialmente (Rajada 1, 2, 3...). Guarde as coordenadas exatas de cada rajada e o respetivo resultado (Água, Nau atingida, Barca afundada, etc.). A memória é a principal arma de um bom estratega. Guarde o Diário de Bordo desta forma:
+•	{"rajada":1,"coordenadas":["A1","D6","G9"],"resultado":"3 Misses","observacoes":"","contadores": "Barcas a flutuar: 4; Caravelas a flutuar: 3; Naus a flutuar: 2; Fragatas a flutuar: 1; Galeões a flutuar: 1"} 
+•	{"rajada":2,"coordenadas":["B6","E2","H4"],"resultado":"1 Hit (Nau); 2 Misses","observacoes":"usar Target Mode; testar ortogonais do hit","contadores": "Barcas a flutuar: 4; Caravelas a flutuar: 3; Naus a flutuar: 2; Fragatas a flutuar: 1; Galeões a flutuar: 1"} 
+•	{"rajada":3,"coordenadas":["C2","F4","I6"],"resultado":"2 Hits (1 Nau; 1 Fragata); 1 Miss","observacoes":"confirmar posições dos hits; priorizar Target Mode para cada hit","contadores": "Barcas a flutuar: 4; Caravelas a flutuar: 3; Naus a flutuar: 2; Fragatas a flutuar: 1; Galeões a flutuar: 1"}
+## Evitar tiros inválidos e repetições
+Não dispare fora dos limites do mapa (ex: Z99) nem repita tiros em coordenadas já testadas – verifique o Diário de Bordo para conseguir evitar estes erros. A única exceção para este desperdício de pólvora é a última rajada do jogo, apenas para perfazer os 3 tiros obrigatórios quando a frota inimiga já estiver irremediavelmente no fundo do mar. 
+## Procedimento após atingir navios
+•	Acertou apenas um tiro: Escolha uma coordenada da rajada e dispare nas posições contíguas (Norte, Sul, Este, Oeste) para descobrir a orientação da embarcação e acabar de a afundar
+•	Acertou mais do que um tiro: Escolha uma coordenada adjacente de cada uma das 3 coordenadas da rajada, de modo a explorar mais do que um ponto de contacto. Por exemplo: se acertou dois tiros na rajada A2-D4-J7, experimente A3-E4-I7 na rajada seguinte, explorando uma adjacência de todos os pontos anteriores
+## Regras após afundamento
+Se uma rajada confirmar que um navio foi afundado, não dispare para as posições contíguas (ortogonais e diagonais) porque os navios nunca estão encostados nem diagonalmente - marque essas casas como água e reduza a contagem dessa embarcação no seu Diário de Bordo. Além disso, como Caravelas, Naus e Fragatas ocupam linhas retas, um tiro certeiro indica que o resto do navio está na horizontal ou na vertical, pelo que deve continuar a procurar nessa direção em vez de disparar nas diagonais. 
+As posições diagonais a um tiro certeiro são garantidamente água (a única exceção é o corpo do Galeão, devido à sua forma em T). Evitar essas diagonais e as casas contíguas a navios afundados poupa imensos tiros.
+## Marcação do halo de água
+Quando o relatório de uma rajada confirmar que um navio foi afundado, analise os dados do seu Diário de Bordo para identificar exatamente onde reside a carcaça da embarcação. Confirmada a posição exata da carcaça, marque todas as quadrículas contíguas (o halo de 1 posição em redor do navio) como água intransitável. É impossível haver outra embarcação nesse perímetro.
+## Declaração de fim de jogo
+Se a sua frota for toda afundada, declare a derrota com honra. Em contrapartida, seja um vencedor magnânimo se for o inimigo a render-se com os navios todos no fundo do oceano!
+
+# Links para os vídeos do YouTube
+https://youtu.be/4-C8CIBvnPE
+https://youtu.be/VkcgKGBzlhs
+
 ---
 **Maintained by:** [@britoeabreu](https://github.com/britoeabreu)  
 *Created for the Software Engineering students at ISCTE-IUL.*
