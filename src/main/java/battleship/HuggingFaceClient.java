@@ -22,7 +22,7 @@ import java.util.ArrayList;
  */
 public class HuggingFaceClient {
 
-    private static final String HF_TOKEN = "hf_INSIRA_AQUI_O_SEU_TOKEN";
+    private static final String HF_TOKEN = //"INSERT_TOKEN_HERE";
     private static final String MODEL_URL = "https://router.huggingface.co/v1/chat/completions";
 
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -115,7 +115,6 @@ public class HuggingFaceClient {
 
         String jsonBody = mapper.writeValueAsString(requestBody);
 
-        HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(MODEL_URL))
                 .header("Authorization", "Bearer " + HF_TOKEN)
@@ -123,20 +122,30 @@ public class HuggingFaceClient {
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        try (HttpClient client = HttpClient.newHttpClient()) {
 
-        if (response.statusCode() != 200) {
-            throw new RuntimeException("Erro na API: " + response.statusCode() + " - " + response.body());
+            HttpResponse<String> response = client.send(
+                    request,
+                    HttpResponse.BodyHandlers.ofString()
+            );
+
+            if (response.statusCode() != 200) {
+                throw new RuntimeException(
+                        "Erro na API: " + response.statusCode() + " - " + response.body()
+                );
+            }
+
+            Map<?, ?> responseMap = mapper.readValue(response.body(), Map.class);
+            List<?> choices = (List<?>) responseMap.get("choices");
+            Map<?, ?> firstChoice = (Map<?, ?>) choices.get(0);
+            Map<?, ?> message = (Map<?, ?>) firstChoice.get("message");
+            String generatedText = (String) message.get("content");
+
+            history.add(Map.of("role", "assistant", "content", generatedText));
+            return generatedText.trim();
+
         }
 
-        Map<?, ?> responseMap = mapper.readValue(response.body(), Map.class);
-        List<?> choices = (List<?>) responseMap.get("choices");
-        Map<?, ?> firstChoice = (Map<?, ?>) choices.get(0);
-        Map<?, ?> message = (Map<?, ?>) firstChoice.get("message");
-        String generatedText = (String) message.get("content");
-
-        history.add(Map.of("role", "assistant", "content", generatedText));
-        return generatedText.trim();
     }
 
     /**
