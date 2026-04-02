@@ -1,4 +1,4 @@
-Francisco Silva - 1110323: "Como eliminei a branch na qual fiz a feature do gamerportpdf no guião 2, no guião 3 vou realizar a tarefa 1 usando a branch da feature da integração de LLM, calculando as métricas a partir do ultimo commit dessa branch."
+Francisco Silva - 1110323: "Como eliminei a branch na qual fiz a feature do gamerportpdf no guião 2, no guião 3 vou realizar a tarefa 1 usando a branch da feature da integração de LLM que criei, calculando as métricas a partir do ultimo commit dessa branch."
 
 # ⚓ Battleship 2.0
 
