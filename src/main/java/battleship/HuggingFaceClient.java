@@ -22,7 +22,7 @@ import java.util.ArrayList;
  */
 public class HuggingFaceClient {
 
-    private static final String HF_TOKEN = //"INSERT_TOKEN_HERE";
+    private static final String HF_TOKEN = "INSERT_TOKEN_HERE";
     private static final String MODEL_URL = "https://router.huggingface.co/v1/chat/completions";
 
     private static final ObjectMapper mapper = new ObjectMapper();
