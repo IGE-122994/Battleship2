@@ -1,0 +1,26 @@
+version: "1.0"
+
+linter: jetbrains/qodana-jvm:latest
+
+inspections:
+  - name: OverlyComplexMethod
+    enabled: true
+    options:
+      complexityLimit: 10
+
+  - name: OverlyLongMethod
+    enabled: true
+    options:
+      lengthLimit: 30
+
+  - name: OverlyNestedMethod
+    enabled: true
+    options:
+      nestingDepthLimit: 3
+
+profile:
+  name: qodana.recommended
+
+failureConditions:
+  severityThresholds:
+    any: 1
