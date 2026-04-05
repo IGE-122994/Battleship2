@@ -2,6 +2,7 @@ version: "1.0"
 
 linter: jetbrains/qodana-jvm:latest
 
+
 qualityGates:
   - name: "God Class Detector"
     fail: true
@@ -40,6 +41,7 @@ qualityGates:
       - metric: "method.parameters"
         operator: ">="
         value: 3
+
 
 inspections:
   - name: OverlyComplexMethod
