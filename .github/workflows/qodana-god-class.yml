@@ -60,6 +60,5 @@ jobs:
       - name: Run Qodana with God Class Quality Gate
         uses: JetBrains/qodana-action@v2024.1
         with:
-          args: |
-            --save-report
-            --fail-threshold
+          args: >
+            --fail-threshold 0
