@@ -2,7 +2,7 @@
 # Cheiro no código: Long Method (Martin Fowler)
 # Classe: HuggingFaceClient - método buildGameHistory()
 # Detetado via: Overly complex method + Overly long method (Method metrics)
-# Métricas: CC=30 (threshold > 5), LOC=85 (threshold > 31)
+# Métricas: CC=30 (threshold > 10), LOC=85 (threshold > 31)
 
 name: Qodana - Long Method Detection
 

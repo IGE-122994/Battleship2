@@ -1,0 +1,63 @@
+# Número e nome de aluno: 122994 - Diogo Almeida
+# Cheiro no código: God Class (Martin Fowler)
+# Classe: Game.java
+# Detetado via: Class with too many methods + Class with too many fields + Overly complex class + Overly coupled class (Class metrics)
+# Métricas relevantes, segundo "Object-Oriented Metrics in Practice" (valores definidos no livro):
+# - WMC = 64 (threshold >= 47)  → complexidade excessiva
+# - ATFD = 6 (threshold >= 5) → acoplamento externo elevado
+# - TCC = 0.2206 (threshold <= 0.33) → baixa coesão
+#
+# Métricas adicionais de suporte (valores definidos pelo MetricsTree - desde High a Extreme):
+# - CBO = 34 (threshold > 23) → acoplamento elevado
+# - NOA = 18 (threshold > 14) → demasiados atributos
+# - NOM = 20 (threshold > 15) → demasiados métodos
+# - RFC = 84 (threshold > 80) → classe responde a demasiadas mensagens
+
+name: Qodana - God Class Detection
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  qodana:
+    runs-on: ubuntu-latest
+
+    env:
+      QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+
+    permissions:
+      contents: write
+      checks: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Debug - check QODANA_TOKEN presence
+        run: |
+          if [ -z "$QODANA_TOKEN" ]; then
+            echo "QODANA_TOKEN is empty"
+            exit 1
+          else
+            echo "QODANA_TOKEN is present"
+          fi
+
+      - name: Set up Qodana
+        uses: JetBrains/qodana-action@v2024.1
+        with:
+          cache-default-branch-only: true
+
+      - name: Run Qodana with God Class Quality Gate
+        uses: JetBrains/qodana-action@v2024.1
+        with:
+          args: |
+            --save-report
+            --fail-threshold
