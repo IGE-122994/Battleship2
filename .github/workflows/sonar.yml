@@ -23,14 +23,10 @@ jobs:
           distribution: 'temurin'
           cache: 'maven'
 
-      - name: Build with Maven
-        run: mvn clean verify
-
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
+      - name: Build and analyze with Maven
+        run: mvn clean verify sonar:sonar
+          -Dsonar.projectKey=IGE-122994_Battleship2
+          -Dsonar.organization=ige-122994
+          -Dsonar.host.url=https://sonarcloud.io
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        with:
-          args: >
-            -Dsonar.projectKey=IGE-122994_Battleship2
-            -Dsonar.organization=ige-122994
