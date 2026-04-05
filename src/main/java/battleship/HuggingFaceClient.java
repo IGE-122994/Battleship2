@@ -68,7 +68,7 @@ public class HuggingFaceClient {
                 - Fim do jogo: verifica "Already fired" antes de cada tiro e escolhe apenas posições não listadas
         
         """;
-
+        String erroIntencional = "isto é um erro proposital"; // erro intencional para testar SonarQube
         history.add(Map.of("role", "user", "content", systemPrompt));
         String response = sendMessage("Confirma que entendeste todas as regras respondendo apenas com: PRONTO");
         initialized = true;
