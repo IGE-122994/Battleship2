@@ -2,17 +2,56 @@ version: "1.0"
 
 linter: jetbrains/qodana-jvm:latest
 
+
+qualityGates:
+  - name: "God Class Detector"
+    fail: true
+    conditions:
+      - metric: "class.wmc"
+        operator: ">="
+        value: 47
+      - metric: "class.atfd"
+        operator: ">="
+        value: 5
+      - metric: "class.cbo"
+        operator: ">="
+        value: 14
+      - metric: "class.fields.count"
+        operator: ">="
+        value: 4
+      - metric: "class.methods.count"
+        operator: ">="
+        value: 7
+      - metric: "class.rfc"
+        operator: ">="
+        value: 45
+
+  - name: "Long Method Detector"
+    fail: true
+    conditions:
+      - metric: "method.complexity"
+        operator: ">="
+        value: 10
+      - metric: "method.lines"
+        operator: ">="
+        value: 31
+      - metric: "method.nesting.depth"
+        operator: ">="
+        value: 3
+      - metric: "method.parameters"
+        operator: ">="
+        value: 3
+
+
 inspections:
   - name: OverlyComplexMethod
     enabled: true
     options:
       complexityLimit: 10
-
   - name: OverlyLongMethod
     enabled: true
     options:
       lengthLimit: 30
-
   - name: OverlyNestedMethod
     enabled: true
     options:
