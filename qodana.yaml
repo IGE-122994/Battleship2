@@ -2,6 +2,32 @@ version: "1.0"
 
 linter: jetbrains/qodana-jvm:latest
 
+qualityGates:
+  - name: "God Class Detector"
+    fail: true
+    conditions:
+      # Métricas formais (Lanza & Marinescu)
+      - metric: "class.wmc"
+        operator: ">="
+        value: 47
+      - metric: "class.atfd"
+        operator: ">="
+        value: 5
+
+      # Métricas adicionais de suporte (thresholds mínimos = High do MetricsTree)
+      - metric: "class.cbo"
+        operator: ">="
+        value: 14
+      - metric: "class.fields.count"
+        operator: ">="
+        value: 4
+      - metric: "class.methods.count"
+        operator: ">="
+        value: 7
+      - metric: "class.rfc"
+        operator: ">="
+        value: 45
+
 inspections:
   - name: OverlyComplexMethod
     enabled: true
