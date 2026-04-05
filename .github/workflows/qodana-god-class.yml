@@ -26,6 +26,10 @@ on:
 jobs:
   qodana:
     runs-on: ubuntu-latest
+
+    env:
+      QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
+
     permissions:
       contents: write
       checks: write
@@ -48,5 +52,3 @@ jobs:
           args: |
             --save-report
             --fail-threshold
-        env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
