@@ -1,4 +1,4 @@
-# Problema no laboratório 3 - Inspeção, métricas e cheiros no código
+# Problema no lab 3 - Inspeção, métricas e cheiros no código
 
 <img width="1907" height="923" alt="image" src="https://github.com/user-attachments/assets/10471a38-46ea-4e55-9091-268db0993d3f" />
 
@@ -11,6 +11,18 @@ Posto isto, cada um de nós vai proceder a realizar um printscreen de uma parte 
 - **Issues** -> _branch main - High Severity - Maintainability - Cognitive Complexity_
 - **Issues** -> _branch main - Info Severity_
 - **Issues** -> _pull request 28 - erro intencional HuggingFaceClient.java_
+
+---
+
+# Questão sobre QODANA_TOKEN
+
+Existiram problemas com o QODANA_TOKEN que nos impediram de realizar o trabalho, como queríamos, a tempo (23h59 de 05/04).
+
+Devido a estes impasses, acabámos por ficar com o ficheiro _qodana.yaml_ (muito) simplificado, ao invés do mais completo que se perdeu (propositadamente) entre tentativas de resolver os problemas, nomeadamente a incompatibilidade de versões (provavelmente), visto termos obtido o seguinte erro:
+
+- _Unexpected keys in qodana.yaml: [qualityGates, inspections]_
+
+Posto isto, pedimos a vossa compreensão, e que contem com o (pouco) trabalho realizado após a hora final. Obrigado!
 
 ---
 
