@@ -17,11 +17,9 @@ name: Qodana - God Class Detection
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "**" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "main", "master" ]
 
 jobs:
   qodana:
