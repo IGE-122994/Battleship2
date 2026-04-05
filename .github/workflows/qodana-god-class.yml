@@ -48,6 +48,10 @@ jobs:
             echo "QODANA_TOKEN is present"
           fi
 
+      - name: Debug - show QODANA_TOKEN prefix
+        run: |
+          echo "Runner token prefix: ${QODANA_TOKEN:0:8}"
+
       - name: Set up Qodana
         uses: JetBrains/qodana-action@v2024.1
         with:
