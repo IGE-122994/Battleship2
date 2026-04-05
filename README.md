@@ -1,4 +1,24 @@
+# Problema no laboratório 3 - Inspeção, métricas e cheiros no código
+
+<img width="1907" height="923" alt="image" src="https://github.com/user-attachments/assets/10471a38-46ea-4e55-9091-268db0993d3f" />
+
+## Problema em questão
+
+Como estamos a utilizar a versão não paga (gratuita) do SonarQube Cloud, apenas nos é permitido analisar o branch main, como podemos ver pela imagem acima.
+
+Posto isto, cada um de nós vai proceder a realizar um printscreen de uma parte diferente da análise, nomeadamente das seguintes:
+- **Issues** -> _branch main - Blocker Severity_
+- **Issues** -> _branch main - High Severity - Maintainability - Cognitive Complexity_
+- **Issues** -> _branch main - Info Severity_
+- **Issues** -> _pull request 28 - erro intencional HuggingFaceClient.java_
+
+---
+
+## Nota sobre a tarefa 1
+
 Francisco Silva - 1110323: "Como eliminei a branch na qual fiz a feature do gamerportpdf no guião 2, no guião 3 vou realizar a tarefa 1 usando a branch da feature da integração de LLM que criei, calculando as métricas a partir do ultimo commit dessa branch."
+
+---
 
 # ⚓ Battleship 2.0
 
