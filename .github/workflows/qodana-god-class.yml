@@ -40,7 +40,6 @@ jobs:
       - name: Set up Qodana
         uses: JetBrains/qodana-action@v2024.1
         with:
-          linter: jetbrains/qodana-jvm
           cache-default-branch-only: true
 
       - name: Run Qodana with God Class Quality Gate
