@@ -41,6 +41,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Debug - check QODANA_TOKEN presence
+        run: |
+          if [ -z "$QODANA_TOKEN" ]; then
+            echo "QODANA_TOKEN is empty"
+            exit 1
+          else
+            echo "QODANA_TOKEN is present"
+          fi
+
       - name: Set up Qodana
         uses: JetBrains/qodana-action@v2024.1
         with:
