@@ -204,6 +204,13 @@ Se a sua frota for toda afundada, declare a derrota com honra. Em contrapartida,
 https://youtu.be/4-C8CIBvnPE
 https://youtu.be/VkcgKGBzlhs
 
+## CI/CD Workflows
+
+### Java with Maven
+[![Java with Maven](https://github.com/IGE-122994/Battleship2/actions/workflows/javawithmaven.yml/badge.svg)](https://github.com/IGE-122994/Battleship2/actions/workflows/javawithmaven.yml)
+
+Executa automaticamente os testes unitários JUnit a cada push ou pull request para o branch `main`.
+
 ---
 **Maintained by:** [@britoeabreu](https://github.com/britoeabreu)  
 *Created for the Software Engineering students at ISCTE-IUL.*
