@@ -7,9 +7,9 @@ import java.util.List;
 
 /**
  * Test class for Ship.
- * Author: ${user.name}
- * Date: ${current_date}
- * Time: ${current_time}
+ * Author: Pedro Vicêncio
+ * Date: 2026-04-23
+ * Time: 13:00
  * Cyclomatic Complexity for each method:
  * - Constructor: 1
  * - getCategory: 1
@@ -128,9 +128,8 @@ public class ShipTest {
      */
     @Test
     void testShoot2() {
-        Position target = new Position(0, 0);
-        ship.shoot(target); // No exception expected
-        assertFalse(ship.getPositions().get(0).isHit(), "Error: Position should not be marked as hit for an invalid target.");
+        Position invalidPos = new Position(-1, 5);
+        assertThrows(AssertionError.class, () -> ship.shoot(invalidPos), "Shoot should throw AssertionError for position not inside.");
     }
 
     /**
@@ -191,38 +190,74 @@ public class ShipTest {
     }
 
     /**
-     * Test for the getTopMostPos method.
+     * Test for the getTopMostPos method (size 1).
      * Cyclomatic Complexity: 2
      */
     @Test
-    void testGetTopMostPos() {
+    void testGetTopMostPos1() {
         assertEquals(5, ship.getTopMostPos(), "Error: The topmost position should be 5.");
     }
 
     /**
-     * Test for the getBottomMostPos method.
+     * Test for the getTopMostPos method (size > 1).
+     */
+    @Test
+    void testGetTopMostPos2() {
+        Ship frigate = new Frigate(Compass.NORTH, new Position(5, 5));
+        assertEquals(5, frigate.getTopMostPos(), "Error: The topmost position should be 5 for Frigate.");
+    }
+
+    /**
+     * Test for the getBottomMostPos method (size 1).
      * Cyclomatic Complexity: 2
      */
     @Test
-    void testGetBottomMostPos() {
+    void testGetBottomMostPos1() {
         assertEquals(5, ship.getBottomMostPos(), "Error: The bottommost position should be 5.");
     }
 
     /**
-     * Test for the getLeftMostPos method.
+     * Test for the getBottomMostPos method (size > 1).
+     */
+    @Test
+    void testGetBottomMostPos2() {
+        Ship frigate = new Frigate(Compass.NORTH, new Position(5, 5));
+        assertEquals(8, frigate.getBottomMostPos(), "Error: The bottommost position should be 8 for Frigate.");
+    }
+
+    /**
+     * Test for the getLeftMostPos method (size 1).
      * Cyclomatic Complexity: 2
      */
     @Test
-    void testGetLeftMostPos() {
+    void testGetLeftMostPos1() {
         assertEquals(5, ship.getLeftMostPos(), "Error: The leftmost position should be 5.");
     }
 
     /**
-     * Test for the getRightMostPos method.
+     * Test for the getLeftMostPos method (size > 1).
+     */
+    @Test
+    void testGetLeftMostPos2() {
+        Ship frigate = new Frigate(Compass.EAST, new Position(5, 5));
+        assertEquals(5, frigate.getLeftMostPos(), "Error: The leftmost position should be 5 for Frigate EAST.");
+    }
+
+    /**
+     * Test for the getRightMostPos method (size 1).
      * Cyclomatic Complexity: 2
      */
     @Test
-    void testGetRightMostPos() {
+    void testGetRightMostPos1() {
         assertEquals(5, ship.getRightMostPos(), "Error: The rightmost position should be 5.");
+    }
+
+    /**
+     * Test for the getRightMostPos method (size > 1).
+     */
+    @Test
+    void testGetRightMostPos2() {
+        Ship frigate = new Frigate(Compass.EAST, new Position(5, 5));
+        assertEquals(8, frigate.getRightMostPos(), "Error: The rightmost position should be 8 for Frigate EAST.");
     }
 }
