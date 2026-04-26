@@ -85,7 +85,42 @@ public class CompassTest {
 	 * Test for the charToCompass method (null input).
 	 */
 	@Test
+
 	void charToCompass3() {
 		assertNull(Compass.charToCompass('\0'), "Error: Null character should map to null.");
 	}
+
+	@Test
+	@DisplayName("randomBearing retorna um valor não nulo")
+	void testRandomBearingNotNull() {
+		assertNotNull(Compass.randomBearing());
+	}
+
+	@Test
+	@DisplayName("randomBearing retorna um valor válido do enum")
+	void testRandomBearingValidValue() {
+		Compass result = Compass.randomBearing();
+		assertTrue(
+				result == Compass.NORTH ||
+						result == Compass.SOUTH ||
+						result == Compass.EAST  ||
+						result == Compass.WEST
+		);
+	}
+
+	@Test
+	@DisplayName("values retorna 4 direções")
+	void testValuesLength() {
+		assertEquals(4, Compass.values().length);
+	}
+
+	@Test
+	@DisplayName("valueOf NORTH retorna NORTH")
+	void testValueOfNorth() {
+		assertEquals(Compass.NORTH, Compass.valueOf("NORTH"));
+	}
+
 }
+
+
+
