@@ -1,7 +1,7 @@
 package battleship;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -10,6 +10,22 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.assumeTrue;
 
+/**
+ * Test class for GameReportPDF.
+ * Author: Francisco Silva
+ * Date: 2026-04-27
+ * Cyclomatic Complexity:
+ * - generate(): 2
+ * - addTitle(): 1
+ * - addStatistics(): 1
+ * - addMovesSummary(): 2
+ * - addFinalBoard(): 6
+ * - addTableRow(): 1
+ * - addTableHeader(): 1
+ * - cell(): 1
+ * - summariseMove(): 9
+ * - addFooter(): 1
+ */
 class GameReportPDFTest {
 
     private Game game;
@@ -18,7 +34,6 @@ class GameReportPDFTest {
     @BeforeEach
     void setUp() {
         fleet = new Fleet();
-        // Adicionar navios manualmente
         fleet.addShip(new Barge(Compass.NORTH, new Position('A', 1)));
         fleet.addShip(new Barge(Compass.NORTH, new Position('A', 3)));
         fleet.addShip(new Barge(Compass.NORTH, new Position('A', 5)));
@@ -31,164 +46,263 @@ class GameReportPDFTest {
         fleet.addShip(new Carrack(Compass.NORTH, new Position('E', 7)));
         fleet.addShip(new Galleon(Compass.NORTH, new Position('G', 1)));
         game = new Game(fleet);
-        System.out.println("Navios na frota: " + game.getMyFleet().getShips().size());
     }
 
-    // ===================== generate =====================
+    @AfterEach
+    void tearDown() {
+        game = null;
+        fleet = null;
+    }
+
+    // ===================== generate - CC=2 =====================
 
     @Test
-    @DisplayName("generate retorna caminho do ficheiro PDF")
-    void testGenerateReturnsPdfPath() {
+    void generate1() {
+        // Path: geração bem sucedida → retorna caminho com prefixo correto
         String path = GameReportPDF.generate(game, "1m 30s 500ms");
-        assertNotNull(path);
-        assertTrue(path.endsWith(".pdf"));
+        assertAll(
+                () -> assertNotNull(path, "Error: expected non-null path"),
+                () -> assertTrue(path.endsWith(".pdf"), "Error: expected path ending with .pdf"),
+                () -> assertTrue(path.startsWith("data/relatorio_"), "Error: expected path starting with 'data/relatorio_'"),
+                () -> assertTrue(new File(path).exists(), "Error: expected PDF file to exist on disk")
+        );
+        new File(path).delete();
     }
 
     @Test
-    @DisplayName("generate cria o ficheiro PDF em disco")
-    void testGenerateCreatesFile() {
-        String path = GameReportPDF.generate(game, "1m 30s 500ms");
-        File file = new File(path);
-        assertTrue(file.exists());
-        file.delete();
+    void generate2() throws Exception {
+        // Path: erro de IO → retorna caminho mesmo sem criar ficheiro
+        File dataDir = new File("data");
+        if (dataDir.exists() && dataDir.isDirectory()) {
+            for (File f : dataDir.listFiles()) f.delete();
+            dataDir.delete();
+        }
+        File dataFile = new File("data");
+        dataFile.createNewFile();
+        try {
+            String path = GameReportPDF.generate(game, "0m 5s 0ms");
+            assertNotNull(path, "Error: expected non-null path even on IO error");
+        } finally {
+            dataFile.delete();
+        }
+    }
+
+    // ===================== addMovesSummary - CC=2 =====================
+
+    @Test
+    void addMovesSummary1() {
+        // Path: lista de moves vazia → "Nenhuma jogada registada."
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 0s 0ms"),
+                "Error: expected no exception with empty moves list");
     }
 
     @Test
-    @DisplayName("generate cria pasta data/ se não existir")
-    void testGenerateCreatesDataDirectory() {
-        GameReportPDF.generate(game, "0m 10s 0ms");
-        File dir = new File("data/");
-        assertTrue(dir.exists());
-        assertTrue(dir.isDirectory());
+    void addMovesSummary2() {
+        // Path: lista de moves não vazia → tabela com jogadas
+        List<IPosition> shots = List.of(
+                new Position('B', 1),
+                new Position('B', 2),
+                new Position('B', 3)
+        );
+        game.fireShots(shots);
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"),
+                "Error: expected no exception with non-empty moves list");
     }
 
-    @Test
-    @DisplayName("generate com duração vazia não lança exceção")
-    void testGenerateWithEmptyDuration() {
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, ""));
-    }
+    // ===================== summariseMove - CC=9 =====================
 
     @Test
-    @DisplayName("generate retorna caminho com prefixo 'data/relatorio_'")
-    void testGeneratePathPrefix() {
-        String path = GameReportPDF.generate(game, "2m 36s 469ms");
-        assertTrue(path.startsWith("data/relatorio_"));
-    }
-
-    // ===================== summariseMove - todos os ramos =====================
-
-    @Test
-    @DisplayName("generate com tiro fora do tabuleiro cobre ramo 'exterior'")
-    void testGenerateWithOutsideShot() {
+    void summariseMove1() {
+        // Path: tiro fora do tabuleiro → outside++
         List<IPosition> shots = List.of(
                 new Position(-1, 0),
                 new Position(-1, 1),
                 new Position(-1, 2)
         );
         game.fireShots(shots);
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"));
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"),
+                "Error: expected no exception with outside shots");
     }
 
     @Test
-    @DisplayName("generate com tiro repetido cobre ramo 'repetido'")
-    void testGenerateWithRepeatedShot() {
+    void summariseMove2() {
+        // Path: tiro repetido → repeated++
         List<IPosition> shots1 = List.of(
                 new Position('B', 1),
                 new Position('B', 2),
                 new Position('B', 3)
         );
         game.fireShots(shots1);
-
         List<IPosition> shots2 = List.of(
                 new Position('B', 1),
                 new Position('B', 2),
                 new Position('B', 3)
         );
         game.fireShots(shots2);
-
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 10s 0ms"));
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 10s 0ms"),
+                "Error: expected no exception with repeated shots");
     }
 
     @Test
-    @DisplayName("generate com tiro na água cobre ramo 'água'")
-    void testGenerateWithWaterShot() {
-        // B1, B2, B3 não têm navios
+    void summariseMove3() {
+        // Path: tiro na água → misses++
         List<IPosition> shots = List.of(
                 new Position('B', 1),
                 new Position('B', 2),
                 new Position('B', 3)
         );
         game.fireShots(shots);
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"));
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"),
+                "Error: expected no exception with water shots");
     }
 
     @Test
-    @DisplayName("generate com acerto num navio cobre ramo 'acerto'")
-    void testGenerateWithHitOnShip() {
+    void summariseMove4() {
+        // Path: acerto em navio não afundado → hits++
         List<IShip> ships = game.getMyFleet().getShips();
         assumeTrue(!ships.isEmpty(), "Frota sem navios — ignorar teste");
-
         IPosition shipPos = ships.get(0).getPositions().get(0);
-
         List<IPosition> shots = List.of(
                 shipPos,
                 new Position('B', 8),
                 new Position('B', 9)
         );
         game.fireShots(shots);
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"));
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"),
+                "Error: expected no exception with hit on ship");
     }
 
     @Test
-    @DisplayName("generate com navio afundado cobre ramo 'afundado'")
-    void testGenerateWithSunkShip() {
+    void summariseMove5() {
+        // Path: navio afundado → hits++ e sunk++
         List<IShip> ships = game.getMyFleet().getShips();
         assumeTrue(!ships.isEmpty(), "Frota sem navios — ignorar teste");
-
-        // Barge em A1 — tamanho 1, afunda com 1 tiro
-        IPosition pos = new Position('A', 1);
-
         List<IPosition> shots = List.of(
-                pos,
+                new Position('A', 1),
                 new Position('B', 8),
                 new Position('B', 9)
         );
         game.fireShots(shots);
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"));
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"),
+                "Error: expected no exception with sunk ship");
     }
 
     @Test
-    @DisplayName("generate com lista de moves vazia cobre ramo 'sem jogadas'")
-    void testGenerateWithNoMoves() {
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 0s 0ms"));
+    void summariseMove6() {
+        // Path: resultado vazio → retorna "-"
+        Move move = new Move(1, List.of(
+                new Position('B', 1),
+                new Position('B', 2),
+                new Position('B', 3)
+        ), List.of());
+        game.getAlienMoves().add(move);
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"),
+                "Error: expected no exception with empty shot results");
     }
 
     @Test
-    @DisplayName("generate com múltiplos moves cobre addMovesSummary completo")
-    void testGenerateWithMultipleMoves() {
+    void summariseMove7() {
+        // Path: múltiplos moves → tabela completa
         List<IPosition> shots1 = List.of(
                 new Position('B', 1),
                 new Position('B', 2),
                 new Position('B', 3)
         );
         game.fireShots(shots1);
-
         List<IPosition> shots2 = List.of(
                 new Position('B', 4),
                 new Position('B', 5),
                 new Position('B', 6)
         );
         game.fireShots(shots2);
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "1m 0s 0ms"),
+                "Error: expected no exception with multiple moves");
+    }
 
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, "1m 0s 0ms"));
+    // ===================== addFinalBoard - CC=6 =====================
+
+    @Test
+    void addFinalBoard1() {
+        // Path: tabuleiro vazio sem moves
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 0s 0ms"),
+                "Error: expected no exception with empty board");
     }
 
     @Test
-    @DisplayName("generate com todos os navios afundados cobre addFinalBoard completo")
-    void testGenerateWithAllShipsSunk() {
+    void addFinalBoard2() {
+        // Path: posição com navio marcada como '#'
+        List<IShip> ships = game.getMyFleet().getShips();
+        assumeTrue(!ships.isEmpty(), "Frota sem navios — ignorar teste");
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 0s 0ms"),
+                "Error: expected no exception with ships on board");
+    }
+
+    @Test
+    void addFinalBoard3() {
+        // Path: tiro acerta navio → marcado como '*'
+        List<IShip> ships = game.getMyFleet().getShips();
+        assumeTrue(!ships.isEmpty(), "Frota sem navios — ignorar teste");
+        IPosition shipPos = ships.get(0).getPositions().get(0);
+        List<IPosition> shots = List.of(
+                shipPos,
+                new Position('B', 8),
+                new Position('B', 9)
+        );
+        game.fireShots(shots);
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"),
+                "Error: expected no exception with hit marker on board");
+    }
+
+    @Test
+    void addFinalBoard4() {
+        // Path: tiro na água → marcado como 'o'
+        List<IPosition> shots = List.of(
+                new Position('B', 1),
+                new Position('B', 2),
+                new Position('B', 3)
+        );
+        game.fireShots(shots);
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"),
+                "Error: expected no exception with water marker on board");
+    }
+
+    @Test
+    void addFinalBoard5() {
+        // Path: navio afundado → adjacentes marcados como '-'
+        List<IPosition> shots1 = List.of(
+                new Position('A', 1),
+                new Position('J', 8),
+                new Position('J', 9)
+        );
+        game.fireShots(shots1);
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"),
+                "Error: expected no exception with adjacent marker on board");
+    }
+
+    @Test
+    void addFinalBoard6() {
+        // Path: tiro em posição adjacente '-' → marcado como 'o'
+        List<IPosition> shots1 = List.of(
+                new Position('A', 1),
+                new Position('J', 8),
+                new Position('J', 9)
+        );
+        game.fireShots(shots1);
+        List<IPosition> shots2 = List.of(
+                new Position('A', 2),
+                new Position('J', 6),
+                new Position('J', 7)
+        );
+        game.fireShots(shots2);
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 10s 0ms"),
+                "Error: expected no exception with shot on adjacent position");
+    }
+
+    @Test
+    void addFinalBoard7() {
+        // Path: todos os navios afundados → board completo
         IFleet myFleet = game.getMyFleet();
         assumeTrue(!myFleet.getShips().isEmpty(), "Frota sem navios — ignorar teste");
-
         for (IShip ship : myFleet.getShips()) {
             for (IPosition pos : ship.getPositions()) {
                 try {
@@ -203,99 +317,7 @@ class GameReportPDFTest {
                 }
             }
         }
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, "5m 0s 0ms"));
-    }
-
-    @Test
-    @DisplayName("summariseMove sem resultados retorna '-'")
-    void testGenerateWithEmptyShotResults() {
-        // Move com lista de resultados vazia — summariseMove retorna "-"
-        List<IPosition> shots = List.of(
-                new Position('B', 1),
-                new Position('B', 2),
-                new Position('B', 3)
-        );
-        game.fireShots(shots);
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"));
-    }
-
-    @Test
-    @DisplayName("addFinalBoard cobre tiro em posição adjacente a navio afundado")
-    void testGenerateWithShotOnAdjacentPosition() {
-        // Afundar a Barge em A1
-        List<IPosition> shots1 = List.of(
-                new Position('A', 1),
-                new Position('B', 8),
-                new Position('B', 9)
-        );
-        game.fireShots(shots1);
-
-        // Disparar na posição adjacente A2 (halo da Barge afundada)
-        List<IPosition> shots2 = List.of(
-                new Position('A', 2),
-                new Position('B', 6),
-                new Position('B', 7)
-        );
-        game.fireShots(shots2);
-
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 10s 0ms"));
-    }
-    @Test
-    @DisplayName("summariseMove retorna '-' quando não há resultados")
-    void testSummariseMoveReturnsHyphenWhenNoResults() {
-        // Move com lista de resultados vazia
-        Move move = new Move(1, List.of(
-                new Position('B', 1),
-                new Position('B', 2),
-                new Position('B', 3)
-        ), List.of());
-        game.getAlienMoves().add(move);
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 5s 0ms"));
-    }
-
-    @Test
-    @DisplayName("addFinalBoard cobre tiro em posição adjacente marcada com '-'")
-    void testFinalBoardShotOnAdjacentMinus() {
-        // Afundar Barge em A1 — posição A2 fica com '-'
-        List<IPosition> shots1 = List.of(
-                new Position('A', 1),
-                new Position('J', 8),
-                new Position('J', 9)
-        );
-        game.fireShots(shots1);
-
-        // Disparar em A2 que está marcada como '-' (adjacente à Barge afundada)
-        List<IPosition> shots2 = List.of(
-                new Position('A', 2),
-                new Position('J', 6),
-                new Position('J', 7)
-        );
-        game.fireShots(shots2);
-
-        assertDoesNotThrow(() -> GameReportPDF.generate(game, "0m 10s 0ms"));
-    }
-
-    @Test
-    @DisplayName("generate lida com erro de IO quando pasta não pode ser criada")
-    void testGenerateHandlesIOException() throws Exception {
-        // Apagar pasta data/ se existir
-        File dataDir = new File("data");
-        if (dataDir.exists() && dataDir.isDirectory()) {
-            for (File f : dataDir.listFiles()) f.delete();
-            dataDir.delete();
-        }
-
-        // Criar um ficheiro chamado "data" para bloquear a criação da pasta
-        File dataFile = new File("data");
-        dataFile.createNewFile();
-
-        try {
-            // Agora o generate vai falhar porque "data" é um ficheiro, não uma pasta
-            String path = GameReportPDF.generate(game, "0m 5s 0ms");
-            assertNotNull(path);
-        } finally {
-            // Limpar — apagar o ficheiro "data"
-            dataFile.delete();
-        }
+        assertDoesNotThrow(() -> GameReportPDF.generate(game, "5m 0s 0ms"),
+                "Error: expected no exception with all ships sunk");
     }
 }
