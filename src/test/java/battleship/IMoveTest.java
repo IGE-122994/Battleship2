@@ -1,6 +1,7 @@
 package battleship;
 
-import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -9,142 +10,244 @@ import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Test class for IMove.
+ * Author: Francisco Silva
+ * Date: 2026-04-27
+ * Cyclomatic Complexity:
+ * - readMove(): 2
+ * - toString(): 1
+ * - getNumber(): 1
+ * - getShots(): 1
+ * - getShotResults(): 1
+ * - processEnemyFire(): 8
+ */
 class IMoveTest {
 
-    // ===================== readMove =====================
+    private IMove move;
 
-    @Test
-    @DisplayName("readMove cria move com número correto")
-    void testReadMoveNumber() {
-        Scanner sc = new Scanner("3 0 0 0 1 0 2");
-        Move move = IMove.readMove(1, sc);
-        assertEquals(1, move.getNumber());
-    }
-
-    @Test
-    @DisplayName("readMove cria move com número correto de tiros")
-    void testReadMoveShotsCount() {
-        Scanner sc = new Scanner("3 0 0 0 1 0 2");
-        Move move = IMove.readMove(1, sc);
-        assertEquals(3, move.getShots().size());
-    }
-
-    @Test
-    @DisplayName("readMove cria move com posições corretas")
-    void testReadMoveShotsPositions() {
-        Scanner sc = new Scanner("3 0 0 0 1 0 2");
-        Move move = IMove.readMove(1, sc);
-        assertEquals(0, move.getShots().get(0).getRow());
-        assertEquals(0, move.getShots().get(0).getColumn());
-        assertEquals(0, move.getShots().get(1).getRow());
-        assertEquals(1, move.getShots().get(1).getColumn());
-        assertEquals(0, move.getShots().get(2).getRow());
-        assertEquals(2, move.getShots().get(2).getColumn());
-    }
-
-    @Test
-    @DisplayName("readMove cria move com lista de resultados vazia")
-    void testReadMoveShotResultsEmpty() {
-        Scanner sc = new Scanner("3 0 0 0 1 0 2");
-        Move move = IMove.readMove(1, sc);
-        assertTrue(move.getShotResults().isEmpty());
-    }
-
-    @Test
-    @DisplayName("readMove com zero tiros cria move vazio")
-    void testReadMoveZeroShots() {
-        Scanner sc = new Scanner("0");
-        Move move = IMove.readMove(1, sc);
-        assertEquals(0, move.getShots().size());
-    }
-
-    @Test
-    @DisplayName("readMove com número de move diferente")
-    void testReadMoveDifferentMoveNumber() {
-        Scanner sc = new Scanner("1 0 0");
-        Move move = IMove.readMove(5, sc);
-        assertEquals(5, move.getNumber());
-    }
-
-    // ===================== Move via IMove =====================
-
-    @Test
-    @DisplayName("toString de Move não retorna null")
-    void testMoveToStringNotNull() {
-        IMove move = new Move(1, List.of(
+    @BeforeEach
+    void setUp() {
+        move = new Move(1, List.of(
                 new Position('A', 1),
                 new Position('A', 2),
                 new Position('A', 3)
         ), new ArrayList<>());
-        assertNotNull(move.toString());
     }
 
-    @Test
-    @DisplayName("getNumber retorna número correto")
-    void testGetNumber() {
-        IMove move = new Move(3, List.of(
-                new Position('A', 1),
-                new Position('A', 2),
-                new Position('A', 3)
-        ), new ArrayList<>());
-        assertEquals(3, move.getNumber());
+    @AfterEach
+    void tearDown() {
+        move = null;
     }
 
+    // ===================== readMove - CC=2 =====================
+
     @Test
-    @DisplayName("getShots retorna lista de tiros correta")
-    void testGetShots() {
-        List<IPosition> shots = List.of(
-                new Position('A', 1),
-                new Position('A', 2),
-                new Position('A', 3)
+    void readMove1() {
+        // Path: numShots > 0 → lê posições e cria move
+        Scanner sc = new Scanner("3 0 0 0 1 0 2");
+        Move result = IMove.readMove(1, sc);
+        assertAll(
+                () -> assertEquals(1, result.getNumber(), "Error: expected move number 1"),
+                () -> assertEquals(3, result.getShots().size(), "Error: expected 3 shots"),
+                () -> assertTrue(result.getShotResults().isEmpty(), "Error: expected empty shot results"),
+                () -> assertEquals(0, result.getShots().get(0).getRow(), "Error: expected row 0 for first shot"),
+                () -> assertEquals(0, result.getShots().get(0).getColumn(), "Error: expected column 0 for first shot"),
+                () -> assertEquals(0, result.getShots().get(1).getRow(), "Error: expected row 0 for second shot"),
+                () -> assertEquals(1, result.getShots().get(1).getColumn(), "Error: expected column 1 for second shot"),
+                () -> assertEquals(0, result.getShots().get(2).getRow(), "Error: expected row 0 for third shot"),
+                () -> assertEquals(2, result.getShots().get(2).getColumn(), "Error: expected column 2 for third shot")
         );
-        IMove move = new Move(1, shots, new ArrayList<>());
-        assertEquals(3, move.getShots().size());
     }
 
     @Test
-    @DisplayName("getShotResults retorna lista de resultados correta")
-    void testGetShotResults() {
+    void readMove2() {
+        // Path: numShots = 0 → cria move vazio
+        Scanner sc = new Scanner("0");
+        Move result = IMove.readMove(1, sc);
+        assertAll(
+                () -> assertEquals(1, result.getNumber(), "Error: expected move number 1"),
+                () -> assertEquals(0, result.getShots().size(), "Error: expected 0 shots"),
+                () -> assertTrue(result.getShotResults().isEmpty(), "Error: expected empty shot results")
+        );
+    }
+
+    @Test
+    void readMove3() {
+        // Path: número de move diferente
+        Scanner sc = new Scanner("1 0 0");
+        Move result = IMove.readMove(5, sc);
+        assertEquals(5, result.getNumber(), "Error: expected move number 5");
+    }
+
+    // ===================== toString - CC=1 =====================
+
+    @Test
+    void toString1() {
+        assertNotNull(move.toString(), "Error: expected non-null toString result");
+    }
+
+    // ===================== getNumber - CC=1 =====================
+
+    @Test
+    void getNumber() {
+        assertEquals(1, move.getNumber(), "Error: expected move number 1");
+    }
+
+    // ===================== getShots - CC=1 =====================
+
+    @Test
+    void getShots() {
+        assertEquals(3, move.getShots().size(), "Error: expected 3 shots");
+    }
+
+    // ===================== getShotResults - CC=1 =====================
+
+    @Test
+    void getShotResults() {
         List<IGame.ShotResult> results = List.of(
                 new IGame.ShotResult(false, false, null, false),
                 new IGame.ShotResult(true, false, null, false),
                 new IGame.ShotResult(true, true, null, false)
         );
-        IMove move = new Move(1, List.of(
+        IMove m = new Move(1, List.of(
                 new Position('A', 1),
                 new Position('A', 2),
                 new Position('A', 3)
         ), results);
-        assertEquals(3, move.getShotResults().size());
+        assertEquals(3, m.getShotResults().size(), "Error: expected 3 shot results");
     }
 
+    // ===================== processEnemyFire - CC=8 =====================
+
     @Test
-    @DisplayName("processEnemyFire com verbose false não lança exceção")
-    void testProcessEnemyFireNotVerbose() {
-        IMove move = new Move(1, List.of(
+    void processEnemyFire1() {
+        // Path: verbose false, tiro inválido (outside)
+        IMove m = new Move(1, List.of(
                 new Position('A', 1),
                 new Position('A', 2),
                 new Position('A', 3)
         ), List.of(
                 new IGame.ShotResult(false, false, null, false),
-                new IGame.ShotResult(true, false, null, false),
-                new IGame.ShotResult(true, false, null, false)
+                new IGame.ShotResult(false, false, null, false),
+                new IGame.ShotResult(false, false, null, false)
         ));
-        assertDoesNotThrow(() -> move.processEnemyFire(false));
+        assertDoesNotThrow(() -> m.processEnemyFire(false),
+                "Error: expected no exception with outside shots verbose=false");
     }
 
     @Test
-    @DisplayName("processEnemyFire com verbose true não lança exceção")
-    void testProcessEnemyFireVerbose() {
-        IMove move = new Move(1, List.of(
+    void processEnemyFire2() {
+        // Path: verbose false, tiro repetido
+        IMove m = new Move(1, List.of(
+                new Position('A', 1),
+                new Position('A', 2),
+                new Position('A', 3)
+        ), List.of(
+                new IGame.ShotResult(true, true, null, false),
+                new IGame.ShotResult(true, true, null, false),
+                new IGame.ShotResult(true, true, null, false)
+        ));
+        assertDoesNotThrow(() -> m.processEnemyFire(false),
+                "Error: expected no exception with repeated shots verbose=false");
+    }
+
+    @Test
+    void processEnemyFire3() {
+        // Path: verbose false, tiro na água
+        IMove m = new Move(1, List.of(
+                new Position('A', 1),
+                new Position('A', 2),
+                new Position('A', 3)
+        ), List.of(
+                new IGame.ShotResult(true, false, null, false),
+                new IGame.ShotResult(true, false, null, false),
+                new IGame.ShotResult(true, false, null, false)
+        ));
+        assertDoesNotThrow(() -> m.processEnemyFire(false),
+                "Error: expected no exception with water shots verbose=false");
+    }
+
+    @Test
+    void processEnemyFire4() {
+        // Path: verbose false, acerto em navio não afundado
+        IShip ship = new Barge(Compass.NORTH, new Position('A', 1));
+        IMove m = new Move(1, List.of(
+                new Position('A', 1),
+                new Position('A', 2),
+                new Position('A', 3)
+        ), List.of(
+                new IGame.ShotResult(true, false, ship, false),
+                new IGame.ShotResult(true, false, null, false),
+                new IGame.ShotResult(true, false, null, false)
+        ));
+        assertDoesNotThrow(() -> m.processEnemyFire(false),
+                "Error: expected no exception with hit on ship verbose=false");
+    }
+
+    @Test
+    void processEnemyFire5() {
+        // Path: verbose false, navio afundado
+        IShip ship = new Barge(Compass.NORTH, new Position('A', 1));
+        IMove m = new Move(1, List.of(
+                new Position('A', 1),
+                new Position('A', 2),
+                new Position('A', 3)
+        ), List.of(
+                new IGame.ShotResult(true, false, ship, true),
+                new IGame.ShotResult(true, false, null, false),
+                new IGame.ShotResult(true, false, null, false)
+        ));
+        assertDoesNotThrow(() -> m.processEnemyFire(false),
+                "Error: expected no exception with sunk ship verbose=false");
+    }
+
+    @Test
+    void processEnemyFire6() {
+        // Path: verbose true, tiro inválido
+        IMove m = new Move(1, List.of(
                 new Position('A', 1),
                 new Position('A', 2),
                 new Position('A', 3)
         ), List.of(
                 new IGame.ShotResult(false, false, null, false),
+                new IGame.ShotResult(false, false, null, false),
+                new IGame.ShotResult(false, false, null, false)
+        ));
+        assertDoesNotThrow(() -> m.processEnemyFire(true),
+                "Error: expected no exception with outside shots verbose=true");
+    }
+
+    @Test
+    void processEnemyFire7() {
+        // Path: verbose true, tiro repetido
+        IMove m = new Move(1, List.of(
+                new Position('A', 1),
+                new Position('A', 2),
+                new Position('A', 3)
+        ), List.of(
+                new IGame.ShotResult(true, true, null, false),
+                new IGame.ShotResult(true, true, null, false),
+                new IGame.ShotResult(true, true, null, false)
+        ));
+        assertDoesNotThrow(() -> m.processEnemyFire(true),
+                "Error: expected no exception with repeated shots verbose=true");
+    }
+
+    @Test
+    void processEnemyFire8() {
+        // Path: verbose true, navio afundado
+        IShip ship = new Barge(Compass.NORTH, new Position('A', 1));
+        IMove m = new Move(1, List.of(
+                new Position('A', 1),
+                new Position('A', 2),
+                new Position('A', 3)
+        ), List.of(
+                new IGame.ShotResult(true, false, ship, true),
                 new IGame.ShotResult(true, false, null, false),
                 new IGame.ShotResult(true, false, null, false)
         ));
-        assertDoesNotThrow(() -> move.processEnemyFire(true));
+        assertDoesNotThrow(() -> m.processEnemyFire(true),
+                "Error: expected no exception with sunk ship verbose=true");
     }
 }
