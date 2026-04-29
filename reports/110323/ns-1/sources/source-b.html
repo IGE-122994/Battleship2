@@ -1,0 +1,211 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"> 
+  <title>Coverage Report > GameTimer</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">battleship</a>
+</div>
+
+<h1>Coverage Summary for Class: GameTimer (battleship)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Branch, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GameTimer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (4/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (6/12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    93,3%
+  </span>
+  <span class="absValue">
+    (14/15)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package battleship;
+&nbsp;
+&nbsp;import org.joda.time.DateTime;
+&nbsp;import org.joda.time.Duration;
+&nbsp;
+&nbsp;/**
+&nbsp; * Utility class responsible for measuring real-time durations during the game.
+&nbsp; * &lt;p&gt;
+&nbsp; * The {@code GameTimer} records the start and end instants of a time interval
+&nbsp; * using the Joda-Time library. It is used to measure:
+&nbsp; * &lt;ul&gt;
+&nbsp; *     &lt;li&gt;The total duration of the game&lt;/li&gt;
+&nbsp; *     &lt;li&gt;The duration of each individual player turn&lt;/li&gt;
+&nbsp; * &lt;/ul&gt;
+&nbsp; * The timer must be explicitly started with {@link #begin()} and stopped with
+&nbsp; * {@link #end()}. The elapsed time can then be retrieved via {@link #getDuration()}.
+&nbsp; * &lt;/p&gt;
+&nbsp; *
+&nbsp; * &lt;p&gt;
+&nbsp; * The class also provides a human-readable formatter through
+&nbsp; * {@link #formatDuration(Duration)}, producing compact output such as:
+&nbsp; * {@code &quot;2h 15m 25s 327ms&quot;}.
+&nbsp; * &lt;/p&gt;
+&nbsp; */
+<b class="fc">&nbsp;public class GameTimer {</b>
+&nbsp;
+&nbsp;    private DateTime beginning;
+&nbsp;    private DateTime ending;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Marks the beginning of the timed interval.
+&nbsp;     * &lt;p&gt;
+&nbsp;     * This method should be called at the moment the game starts or at the
+&nbsp;     * beginning of the first turn, depending on the context in which the timer
+&nbsp;     * is used.
+&nbsp;     * &lt;/p&gt;
+&nbsp;     */
+&nbsp;    public void begin() {
+<b class="fc">&nbsp;        beginning = DateTime.now();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Marks the end of the timed interval.
+&nbsp;     * &lt;p&gt;
+&nbsp;     * After calling this method, the duration between {@link #begin()} and
+&nbsp;     * {@link #end()} can be retrieved using {@link #getDuration()}.
+&nbsp;     * &lt;/p&gt;
+&nbsp;     */
+&nbsp;    public void end() {
+<b class="nc">&nbsp;        ending = DateTime.now();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Returns the elapsed duration between the last calls to {@link #begin()}
+&nbsp;     * and {@link #end()}.
+&nbsp;     *
+&nbsp;     * @return a {@link Duration} representing the elapsed time
+&nbsp;     */
+&nbsp;    public Duration getDuration() {
+<b class="fc">&nbsp;        return new Duration(beginning, ending);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Formats a {@link Duration} into a compact, human-readable string.
+&nbsp;     * &lt;p&gt;
+&nbsp;     * The format adapts to the magnitude of the duration and may include hours,
+&nbsp;     * minutes, seconds and milliseconds. Examples:
+&nbsp;     * &lt;ul&gt;
+&nbsp;     *     &lt;li&gt;{@code &quot;4s 812ms&quot;}&lt;/li&gt;
+&nbsp;     *     &lt;li&gt;{@code &quot;2m 36s 469ms&quot;}&lt;/li&gt;
+&nbsp;     *     &lt;li&gt;{@code &quot;1h 12m 5s 327ms&quot;}&lt;/li&gt;
+&nbsp;     * &lt;/ul&gt;
+&nbsp;     *
+&nbsp;     * @param d the duration to format
+&nbsp;     * @return a formatted string representing the duration
+&nbsp;     */
+&nbsp;    public static String formatDuration(Duration d) {
+<b class="fc">&nbsp;        long totalMs = d.getMillis();</b>
+&nbsp;
+<b class="fc">&nbsp;        long hours = totalMs / 3_600_000;</b>
+<b class="fc">&nbsp;        long minutes = (totalMs % 3_600_000) / 60_000;</b>
+<b class="fc">&nbsp;        long seconds = (totalMs % 60_000) / 1000;</b>
+<b class="fc">&nbsp;        long millis = totalMs % 1000;</b>
+&nbsp;
+<b class="fc">&nbsp;        StringBuilder sb = new StringBuilder();</b>
+&nbsp;
+<b class="pc">&nbsp;        if (hours &gt; 0) sb.append(hours).append(&quot;h &quot;);</b>
+<b class="pc">&nbsp;        if (minutes &gt; 0 || hours &gt; 0) sb.append(minutes).append(&quot;m &quot;);</b>
+<b class="pc">&nbsp;        if (seconds &gt; 0 || minutes &gt; 0 || hours &gt; 0) sb.append(seconds).append(&quot;s &quot;);</b>
+<b class="fc">&nbsp;        sb.append(millis).append(&quot;ms&quot;);</b>
+&nbsp;
+<b class="fc">&nbsp;        return sb.toString().trim();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2026-04-26 21:16</div>
+</div>
+</body>
+</html>
