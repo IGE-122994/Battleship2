@@ -200,6 +200,7 @@ Quando o relatório de uma rajada confirmar que um navio foi afundado, analise o
 ## Declaração de fim de jogo
 Se a sua frota for toda afundada, declare a derrota com honra. Em contrapartida, seja um vencedor magnânimo se for o inimigo a render-se com os navios todos no fundo do oceano!
 
+
 # Links para os vídeos do YouTube
 https://youtu.be/4-C8CIBvnPE
 https://youtu.be/VkcgKGBzlhs
