@@ -45,6 +45,7 @@ public class ShipTest {
      * Test for the constructor.
      * Cyclomatic Complexity: 1
      */
+    @DisplayName("Test Ship constructor")
     @Test
     void testConstructor() {
         assertNotNull(ship, "Error: Ship instance should not be null.");
@@ -58,6 +59,7 @@ public class ShipTest {
      * Test for the getCategory method.
      * Cyclomatic Complexity: 1
      */
+    @DisplayName("Test getCategory method")
     @Test
     void testGetCategory() {
         assertEquals("Barca", ship.getCategory(), "Error: Ship category should be 'Barca'.");
@@ -67,6 +69,7 @@ public class ShipTest {
      * Test for the getSize method.
      * Cyclomatic Complexity: 1
      */
+    @DisplayName("Test getSize method")
     @Test
     void testGetSize() {
         assertEquals(1, ship.getSize(), "Error: Ship size should be 1.");
@@ -76,6 +79,7 @@ public class ShipTest {
      * Test for the getBearing method.
      * Cyclomatic Complexity: 1
      */
+    @DisplayName("Test getBearing method")
     @Test
     void testGetBearing() {
         assertEquals(Compass.NORTH, ship.getBearing(), "Error: Ship bearing should be NORTH.");
@@ -85,6 +89,7 @@ public class ShipTest {
      * Test for the getPositions method.
      * Cyclomatic Complexity: 1
      */
+    @DisplayName("Test getPositions method")
     @Test
     void testGetPositions() {
         List<IPosition> positions = ship.getPositions();
@@ -98,6 +103,7 @@ public class ShipTest {
      * Test for the stillFloating method (all positions intact).
      * Cyclomatic Complexity: 2
      */
+    @DisplayName("Test stillFloating with all positions intact")
     @Test
     void testStillFloating1() {
         assertTrue(ship.stillFloating(), "Error: Ship should still be floating.");
@@ -106,6 +112,7 @@ public class ShipTest {
     /**
      * Test for the stillFloating method (all positions hit).
      */
+    @DisplayName("Test stillFloating with all positions hit")
     @Test
     void testStillFloating2() {
         ship.getPositions().get(0).shoot();
@@ -116,6 +123,7 @@ public class ShipTest {
      * Test for the shoot method (valid position).
      * Cyclomatic Complexity: 2
      */
+    @DisplayName("Test shoot with valid position")
     @Test
     void testShoot1() {
         Position target = new Position(5, 5);
@@ -126,6 +134,7 @@ public class ShipTest {
     /**
      * Test for the shoot method (invalid position).
      */
+    @DisplayName("Test shoot with invalid position throws exception")
     @Test
     void testShoot2() {
         Position invalidPos = new Position(-1, 5);
@@ -136,6 +145,7 @@ public class ShipTest {
      * Test for the occupies method (position occupied).
      * Cyclomatic Complexity: 2
      */
+    @DisplayName("Test occupies with position occupied")
     @Test
     void testOccupies1() {
         Position pos = new Position(5, 5);
@@ -145,6 +155,7 @@ public class ShipTest {
     /**
      * Test for the occupies method (position not occupied).
      */
+    @DisplayName("Test occupies with position not occupied")
     @Test
     void testOccupies2() {
         Position pos = new Position(1, 1);
@@ -155,6 +166,7 @@ public class ShipTest {
      * Test for the tooCloseTo method with another IShip (ships too close).
      * Cyclomatic Complexity: 2
      */
+    @DisplayName("Test tooCloseTo with ships too close")
     @Test
     void testTooCloseToShip1() {
         Ship nearbyShip = new Barge(Compass.NORTH, new Position(5, 6));
@@ -164,6 +176,7 @@ public class ShipTest {
     /**
      * Test for the tooCloseTo method with another IShip (ships not close).
      */
+    @DisplayName("Test tooCloseTo with ships not close")
     @Test
     void testTooCloseToShip2() {
         Ship farShip = new Barge(Compass.NORTH, new Position(10, 10));
@@ -174,6 +187,7 @@ public class ShipTest {
      * Test for the tooCloseTo method with an IPosition (positions adjacent).
      * Cyclomatic Complexity: 2
      */
+    @DisplayName("Test tooCloseTo with positions adjacent")
     @Test
     void testTooCloseToPosition1() {
         Position pos = new Position(5, 6); // Adjacent position
@@ -183,6 +197,7 @@ public class ShipTest {
     /**
      * Test for the tooCloseTo method with an IPosition (positions not adjacent).
      */
+    @DisplayName("Test tooCloseTo with positions not adjacent")
     @Test
     void testTooCloseToPosition2() {
         Position pos = new Position(7, 7); // Non-adjacent position
@@ -193,6 +208,7 @@ public class ShipTest {
      * Test for the getTopMostPos method (size 1).
      * Cyclomatic Complexity: 2
      */
+    @DisplayName("Test getTopMostPos with size 1")
     @Test
     void testGetTopMostPos1() {
         assertEquals(5, ship.getTopMostPos(), "Error: The topmost position should be 5.");
@@ -201,6 +217,7 @@ public class ShipTest {
     /**
      * Test for the getTopMostPos method (size > 1).
      */
+    @DisplayName("Test getTopMostPos with size > 1")
     @Test
     void testGetTopMostPos2() {
         Ship frigate = new Frigate(Compass.NORTH, new Position(5, 5));
@@ -211,6 +228,7 @@ public class ShipTest {
      * Test for the getBottomMostPos method (size 1).
      * Cyclomatic Complexity: 2
      */
+    @DisplayName("Test getBottomMostPos with size 1")
     @Test
     void testGetBottomMostPos1() {
         assertEquals(5, ship.getBottomMostPos(), "Error: The bottommost position should be 5.");
@@ -219,6 +237,7 @@ public class ShipTest {
     /**
      * Test for the getBottomMostPos method (size > 1).
      */
+    @DisplayName("Test getBottomMostPos with size > 1")
     @Test
     void testGetBottomMostPos2() {
         Ship frigate = new Frigate(Compass.NORTH, new Position(5, 5));
@@ -229,6 +248,7 @@ public class ShipTest {
      * Test for the getLeftMostPos method (size 1).
      * Cyclomatic Complexity: 2
      */
+    @DisplayName("Test getLeftMostPos with size 1")
     @Test
     void testGetLeftMostPos1() {
         assertEquals(5, ship.getLeftMostPos(), "Error: The leftmost position should be 5.");
@@ -237,6 +257,7 @@ public class ShipTest {
     /**
      * Test for the getLeftMostPos method (size > 1).
      */
+    @DisplayName("Test getLeftMostPos with size > 1")
     @Test
     void testGetLeftMostPos2() {
         Ship frigate = new Frigate(Compass.EAST, new Position(5, 5));
@@ -247,6 +268,7 @@ public class ShipTest {
      * Test for the getRightMostPos method (size 1).
      * Cyclomatic Complexity: 2
      */
+    @DisplayName("Test getRightMostPos with size 1")
     @Test
     void testGetRightMostPos1() {
         assertEquals(5, ship.getRightMostPos(), "Error: The rightmost position should be 5.");
@@ -255,6 +277,7 @@ public class ShipTest {
     /**
      * Test for the getRightMostPos method (size > 1).
      */
+    @DisplayName("Test getRightMostPos with size > 1")
     @Test
     void testGetRightMostPos2() {
         Ship frigate = new Frigate(Compass.EAST, new Position(5, 5));
