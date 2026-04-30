@@ -422,17 +422,19 @@ public class Game implements IGame
 		}
 
 		IShip ship = myFleet.shipAt(pos);
-		if (ship == null)
+
+		// Guard Clause: Se não há navio, sai imediatamente
+		if (ship == null) {
 			return new ShotResult(true, false, null, false);
-		else
-		{
-			ship.shoot(pos);
-			countHits++;
-			if (!ship.stillFloating()) {
-				countSinks++;
-			}
-			return new ShotResult(true, false, ship, !ship.stillFloating());
 		}
+
+		// O resto do código (o "caminho feliz") deixa de precisar do "else"
+		ship.shoot(pos);
+		countHits++;
+		if (!ship.stillFloating()) {
+			countSinks++;
+		}
+		return new ShotResult(true, false, ship, !ship.stillFloating());
 	}
 
 	@Override
