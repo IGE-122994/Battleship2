@@ -176,15 +176,15 @@ public class Fleet implements IFleet
      * @see battleship.IFleet#shipAt(battleship.IPosition)
      */
     @Override
-    public IShip shipAt(IPosition pos)
-    {
+	public IShip shipAt(IPosition pos) {
 		assert pos != null;
 
-		for (IShip ship : ships)
-			if (ship.occupies(pos))
-				return ship;
-		return null;
-    }
+		// Transforma o ciclo e os múltiplos retornos num único retorno com Streams
+		return ships.stream()
+				.filter(ship -> ship.occupies(pos))
+				.findFirst()
+				.orElse(null);
+	}
 
 	/**
 	 * Is inside board boolean.
@@ -206,17 +206,13 @@ public class Fleet implements IFleet
 	 * @param s the s
 	 * @return the boolean
 	 */
-	private boolean colisionRisk(IShip s)
-    {
+	private boolean colisionRisk(IShip s) {
 		assert s != null;
 
-		for (int i = 0; i < ships.size(); i++)
-		{
-			if (ships.get(i).tooCloseTo(s))
-				return true;
-		}
-		return false;
-    }
+		// O anyMatch devolve true imediatamente se algum navio estiver muito perto
+		return ships.stream()
+				.anyMatch(ship -> ship.tooCloseTo(s));
+	}
 
 	/**
 	 * This operation prints all the given ships
