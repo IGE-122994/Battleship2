@@ -247,15 +247,15 @@ public class Game implements IGame
 		// Criar uma instância de Random com uma seed baseada no timestamp atual
 		Random random = new Random(System.currentTimeMillis());
 
-		Set<IPosition> usablePositions = new HashSet<IPosition>();
-		for (int r = 0; r < BOARD_SIZE; r++)
-			for (int c = 0; c < BOARD_SIZE; c++)
-				usablePositions.add(new Position(r, c));
+		// Substitute Algorithm: Usar Streams para filtrar as posições válidas de forma mais direta
+		List<IPosition> candidateShots = java.util.stream.IntStream.range(0, BOARD_SIZE)
+				.boxed()
+				.flatMap(r -> java.util.stream.IntStream.range(0, BOARD_SIZE).mapToObj(c -> new Position(r, c)))
+				.filter(pos -> !repeatedShot(pos)) // Filtra posições onde já se atirou
+				.filter(pos -> myFleet.getSunkShips().stream()
+						.noneMatch(ship -> ship.getAdjacentPositions().contains(pos))) // Filtra adjacentes a navios afundados
+				.collect(java.util.stream.Collectors.toList());
 
-		this.myFleet.getSunkShips().forEach(ship -> usablePositions.removeAll(ship.getAdjacentPositions()));
-		this.alienMoves.forEach(move ->  usablePositions.removeAll(move.getShots()));
-
-		List<IPosition> candidateShots = new ArrayList<>(usablePositions);
 
 		// Criar lista para armazenar os tiros
 		List<IPosition> shots = new ArrayList<IPosition>();
@@ -280,7 +280,7 @@ public class Game implements IGame
 				shots.add(newShot);
 		}
 
-        System.out.println(MessageManager.get("game.burst"));
+		System.out.println(MessageManager.get("game.burst"));
 		for (IPosition shot : shots)
 			System.out.print(shot + " ");
 		System.out.println();
