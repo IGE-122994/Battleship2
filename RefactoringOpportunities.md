@@ -18,8 +18,8 @@
 | Game::printBoard() | Long Method + Overly Complex (CC=20) | Extract Method | 122475 |
 | Game::fireSingleShot() | Multiple return points (4) | Replace Nested Conditional with Guard Clauses | 122475 |
 | Game::randomEnemyFire() | Call to set.removeAll(list) slowly | Substitute Algorithm | 122475 |
-| Fleet::shipAt() | Multiple return points | Replace Nested Conditional with Guard Clauses | 122475 |
-| Fleet::colisionRisk() | Multiple return points | Replace Nested Conditional with Guard Clauses | 122475 |
+| Fleet::shipAt() | Multiple return points | Replace Loop with Pipeline | 122475 |
+| Fleet::colisionRisk() | Multiple return points | Replace Loop with Pipeline | 122475 |
 | Tasks::readClassicPosition() | Multiple return points | Replace Nested Conditional with Guard Clauses | 122475 |
 | HuggingFaceClient::buildGameHistory() | Overly Nested Method (depth=6) | Extract Method | 122475 |
 | Move::processEnemyFire() | Long Method (CC=32, LOC=77) | Extract Method | 122994 |
@@ -27,5 +27,5 @@
 | Tasks::menu() | Brain Method (Cognitive Complexity=61) | Decompose Conditional | 122994 |
 | Galleon::fillSouth() | Multiple loops | Extract Method | 122994 |
 | Ship::occupies() | Multiple return points | Replace Nested Conditional with Guard Clauses | 122994 |
-| Caravel, Carrack, Frigate | Multiple loops (4 each) | Extract Method | 122994 |
+| Caravel | Multiple loops | Extract Method | 122994 |
 | Game::fireSingleShot() | 4 negations | Invert Boolean | 122994 |
