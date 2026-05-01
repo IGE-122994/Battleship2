@@ -177,6 +177,7 @@ public class HuggingFaceClient {
         return shots;
     }
 
+
     /**
      * Builds a human-readable summary of all moves played so far.
      *
@@ -231,19 +232,7 @@ public class HuggingFaceClient {
                         String shipCoord = String.valueOf((char)('A' + shipPos.getRow())) + (shipPos.getColumn() + 1);
                         pendingHits.remove(shipCoord);
                     }
-                    for (IPosition shipPos : r.ship().getPositions()) {
-                        for (int dr = -1; dr <= 1; dr++) {
-                            for (int dc = -1; dc <= 1; dc++) {
-                                if (dr == 0 && dc == 0) continue;
-                                int nr = shipPos.getRow() + dr;
-                                int nc = shipPos.getColumn() + dc;
-                                if (nr >= 0 && nr < 10 && nc >= 0 && nc < 10) {
-                                    String haloCoord = String.valueOf((char)('A' + nr)) + (nc + 1);
-                                    if (!haloPositions.contains(haloCoord)) haloPositions.add(haloCoord);
-                                }
-                            }
-                        }
-                    }
+                    calculateHaloPositions(r, haloPositions);
                 }
             }
         }
@@ -278,4 +267,19 @@ public class HuggingFaceClient {
         return sb.toString();
     }
 
+    private static void calculateHaloPositions(IGame.ShotResult r, List<String> haloPositions) {
+        for (IPosition shipPos : r.ship().getPositions()) {
+            for (int dr = -1; dr <= 1; dr++) {
+                for (int dc = -1; dc <= 1; dc++) {
+                    if (dr == 0 && dc == 0) continue;
+                    int nr = shipPos.getRow() + dr;
+                    int nc = shipPos.getColumn() + dc;
+                    if (nr >= 0 && nr < 10 && nc >= 0 && nc < 10) {
+                        String haloCoord = String.valueOf((char)('A' + nr)) + (nc + 1);
+                        if (!haloPositions.contains(haloCoord)) haloPositions.add(haloCoord);
+                    }
+                }
+            }
+        }
+    }
 }
