@@ -14,6 +14,10 @@ public class Tasks {
 	/**
 	 * The constant LOGGER.
 	 */
+	private Tasks() {
+		throw new UnsupportedOperationException("Tasks is a utility class");
+	}
+
 	private static final Logger LOGGER = LogManager.getLogger();
 
 	/**
