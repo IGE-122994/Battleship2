@@ -113,10 +113,8 @@ public abstract class Ship implements IShip
 		this.bearing = Objects.requireNonNull(bearing, "Ship's bearing must not be null");
 		this.pos = Objects.requireNonNull(pos, "Ship's position must not be null");
 	
-		this.category = category;
-		this.bearing = bearing;
-		this.pos = pos;
-		this.size = size;
+
+        this.size = size;
 
 		positions = new ArrayList<>();
     }
