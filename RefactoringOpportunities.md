@@ -6,7 +6,6 @@
 | HuggingFaceClient::sendMessage() | Replace System.out by logger | Replace System.out by logger | 110323 |
 | GameReportPDF::summariseMove() | Overly Complex Method (CC=12) | Extract Method | 110323 |
 | Ship::buildShip() | Useless assignments (category, bearing, pos) | Remove redundant initializer | 110323 |
-| Position::randomPosition() | Use Random.nextInt() instead | Substitute Algorithm | 110323 |
 | Tasks | Missing private constructor | Add private constructor | 110323 |
 | Fleet::colisionRisk() | Multiple return points | Replace Loop with Pipeline | 110323 |
 | Ship.java (L227, L247, L267, L287, L307, L352, L375) | Suspicious indentation after if | Add Braces | 122466 |
