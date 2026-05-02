@@ -3,11 +3,11 @@
 | Local | Cheiro no Código | Refabricação | Nº Aluno |
 |-------|-----------------|--------------|----------|
 | HuggingFaceClient::buildGameHistory() | Long Method (CC=30, LOC=51) | Extract Method | 110323 |
-| HuggingFaceClient::sendMessage() | Replace System.out by logger | Replace System.out by logger | 110323 |
+| HuggingFaceClient::sendMessage() | Replace System.out by logger | Convert 'System.out' call to call of 'Log4j2' | 110323 |
 | GameReportPDF::summariseMove() | Overly Complex Method (CC=12) | Extract Method | 110323 |
 | Ship::buildShip() | Useless assignments (category, bearing, pos) | Remove redundant initializer | 110323 |
 | Tasks | Missing private constructor | Add private constructor | 110323 |
-| Fleet::colisionRisk() | Multiple return points | Replace Loop with Pipeline | 110323 |
+| Fleet::colisionRisk() | Multiple return points | Collapse loop with stream 'anyMatch()' | 110323 |
 | Ship.java (L227, L247, L267, L287, L307, L352, L375) | Suspicious indentation after if | Add Braces | 122466 |
 | Ship::stillFloating() | Multiple return points | Replace Nested Conditional with Guard Clauses | 122466 |
 | Ship::tooCloseTo() | Multiple return points | Replace Nested Conditional with Guard Clauses | 122466 |
