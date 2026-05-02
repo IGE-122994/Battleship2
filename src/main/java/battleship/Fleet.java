@@ -5,6 +5,7 @@ package battleship;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * The type Fleet.
@@ -210,12 +211,7 @@ public class Fleet implements IFleet
     {
 		assert s != null;
 
-		for (int i = 0; i < ships.size(); i++)
-		{
-			if (ships.get(i).tooCloseTo(s))
-				return true;
-		}
-		return false;
+        return IntStream.range(0, ships.size()).anyMatch(i -> ships.get(i).tooCloseTo(s));
     }
 
 	/**

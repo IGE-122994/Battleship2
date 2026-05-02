@@ -1,6 +1,8 @@
 package battleship;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -26,6 +28,7 @@ public class HuggingFaceClient {
     private static final String MODEL_URL = "https://router.huggingface.co/v1/chat/completions";
 
     private static final ObjectMapper mapper = new ObjectMapper();
+    private static final Logger log = LogManager.getLogger(HuggingFaceClient.class);
 
     private final List<Map<String, String>> history = new ArrayList<>();
     private boolean initialized = false;
@@ -72,7 +75,7 @@ public class HuggingFaceClient {
         history.add(Map.of("role", "user", "content", systemPrompt));
         String response = sendMessage("Confirma que entendeste todas as regras respondendo apenas com: PRONTO");
         initialized = true;
-        System.out.println("LLM inicializado: " + response);
+        log.info("LLM inicializado: {}", response);
     }
 
     /**
@@ -177,6 +180,7 @@ public class HuggingFaceClient {
         return shots;
     }
 
+
     /**
      * Builds a human-readable summary of all moves played so far.
      *
@@ -231,19 +235,7 @@ public class HuggingFaceClient {
                         String shipCoord = String.valueOf((char)('A' + shipPos.getRow())) + (shipPos.getColumn() + 1);
                         pendingHits.remove(shipCoord);
                     }
-                    for (IPosition shipPos : r.ship().getPositions()) {
-                        for (int dr = -1; dr <= 1; dr++) {
-                            for (int dc = -1; dc <= 1; dc++) {
-                                if (dr == 0 && dc == 0) continue;
-                                int nr = shipPos.getRow() + dr;
-                                int nc = shipPos.getColumn() + dc;
-                                if (nr >= 0 && nr < 10 && nc >= 0 && nc < 10) {
-                                    String haloCoord = String.valueOf((char)('A' + nr)) + (nc + 1);
-                                    if (!haloPositions.contains(haloCoord)) haloPositions.add(haloCoord);
-                                }
-                            }
-                        }
-                    }
+                    calculateHaloPositions(r, haloPositions);
                 }
             }
         }
@@ -278,4 +270,19 @@ public class HuggingFaceClient {
         return sb.toString();
     }
 
+    private static void calculateHaloPositions(IGame.ShotResult r, List<String> haloPositions) {
+        for (IPosition shipPos : r.ship().getPositions()) {
+            for (int dr = -1; dr <= 1; dr++) {
+                for (int dc = -1; dc <= 1; dc++) {
+                    if (dr == 0 && dc == 0) continue;
+                    int nr = shipPos.getRow() + dr;
+                    int nc = shipPos.getColumn() + dc;
+                    if (nr >= 0 && nr < 10 && nc >= 0 && nc < 10) {
+                        String haloCoord = String.valueOf((char)('A' + nr)) + (nc + 1);
+                        if (!haloPositions.contains(haloCoord)) haloPositions.add(haloCoord);
+                    }
+                }
+            }
+        }
+    }
 }
