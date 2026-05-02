@@ -180,10 +180,10 @@ public class Fleet implements IFleet
     {
 		assert pos != null;
 
-		for (IShip ship : ships)
-			if (ship.occupies(pos))
-				return ship;
-		return null;
+		return ships.stream()
+			.filter(ship -> ship.occupies(pos))
+			.findFirst()
+			.orElse(null);
     }
 
 	/**
