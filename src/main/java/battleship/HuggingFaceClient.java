@@ -183,99 +183,217 @@ public class HuggingFaceClient {
      * @param moves the list of moves to summarise
      * @return a formatted string describing each move and its outcome
      */
-
-   /* public static String buildGameHistory(List<IMove> moves) {
-        if (moves.isEmpty()) return "Nenhuma jogada ainda.";
-
-        // Lista de todas as posições já disparadas
-        List<String> firedList = new ArrayList<>();
-        for (IMove move : moves) {
-            for (IPosition pos : move.getShots()) {
-                String coord = String.valueOf((char)('A' + pos.getRow())) + (pos.getColumn() + 1);
-                if (!firedList.contains(coord)) firedList.add(coord);
-            }
-        }
-
-        // JSON da última jogada
-        IMove last = moves.get(moves.size() - 1);
-        String lastJson = last.processEnemyFire(false);
-
-        return lastJson + "\nAlready fired: " + String.join(",", firedList);
-    }*/
-
-
-
     public static String buildGameHistory(List<IMove> moves) {
         if (moves.isEmpty()) return "Nenhuma jogada ainda.";
 
-        // Calcular posições já disparadas
-        List<String> firedList = new ArrayList<>();
-        List<String> pendingHits = new ArrayList<>();
-        List<String> haloPositions = new ArrayList<>();
-
+        GameHistoryData historyData = new GameHistoryData();
+        
+        // Process all moves to collect fired positions, pending hits, and sunk ship halos
         for (IMove move : moves) {
-            List<IPosition> shots = move.getShots();
-            List<IGame.ShotResult> results = move.getShotResults();
+            processMoveResults(move, historyData);
+        }
 
-            for (int i = 0; i < shots.size(); i++) {
-                IPosition pos = shots.get(i);
-                String coord = String.valueOf((char)('A' + pos.getRow())) + (pos.getColumn() + 1);
-                if (!firedList.contains(coord)) firedList.add(coord);
+        // Calculate available positions for next move
+        List<String> availablePositions = calculateAvailablePositions(historyData);
 
-                IGame.ShotResult r = results.get(i);
-                if (r.valid() && !r.repeated() && r.ship() != null && !r.sunk()) {
-                    if (!pendingHits.contains(coord)) pendingHits.add(coord);
-                }
-                if (r.valid() && r.sunk() && r.ship() != null) {
-                    for (IPosition shipPos : r.ship().getPositions()) {
-                        String shipCoord = String.valueOf((char)('A' + shipPos.getRow())) + (shipPos.getColumn() + 1);
-                        pendingHits.remove(shipCoord);
-                    }
-                    for (IPosition shipPos : r.ship().getPositions()) {
-                        for (int dr = -1; dr <= 1; dr++) {
-                            for (int dc = -1; dc <= 1; dc++) {
-                                if (dr == 0 && dc == 0) continue;
-                                int nr = shipPos.getRow() + dr;
-                                int nc = shipPos.getColumn() + dc;
-                                if (nr >= 0 && nr < 10 && nc >= 0 && nc < 10) {
-                                    String haloCoord = String.valueOf((char)('A' + nr)) + (nc + 1);
-                                    if (!haloPositions.contains(haloCoord)) haloPositions.add(haloCoord);
-                                }
-                            }
-                        }
+        // Build and return the complete summary
+        return buildHistorySummary(moves, historyData, availablePositions);
+    }
+
+    /**
+     * Inner class to hold game history data (fired positions, pending hits, halo positions).
+     */
+    private static class GameHistoryData {
+        public final List<String> firedList = new ArrayList<>();
+        public final List<String> pendingHits = new ArrayList<>();
+        public final List<String> haloPositions = new ArrayList<>();
+    }
+
+    /**
+     * Processes the results of a single move, updating the history data.
+     *
+     * @param move the move to process
+     * @param historyData the game history data to update
+     */
+    private static void processMoveResults(IMove move, GameHistoryData historyData) {
+        List<IPosition> shots = move.getShots();
+        List<IGame.ShotResult> results = move.getShotResults();
+
+        for (int i = 0; i < shots.size(); i++) {
+            IPosition pos = shots.get(i);
+            IGame.ShotResult result = results.get(i);
+            
+            String coord = positionToCoordinate(pos);
+            addFiredPosition(coord, historyData);
+            processHitOrMiss(coord, result, historyData);
+        }
+    }
+
+    /**
+     * Converts a Position to a coordinate string (e.g., "A1").
+     *
+     * @param pos the position to convert
+     * @return the coordinate string
+     */
+    private static String positionToCoordinate(IPosition pos) {
+        return String.valueOf((char)('A' + pos.getRow())) + (pos.getColumn() + 1);
+    }
+
+    /**
+     * Adds a fired position to the list if not already present.
+     *
+     * @param coord the coordinate to add
+     * @param historyData the game history data to update
+     */
+    private static void addFiredPosition(String coord, GameHistoryData historyData) {
+        if (!historyData.firedList.contains(coord)) {
+            historyData.firedList.add(coord);
+        }
+    }
+
+    /**
+     * Processes a shot result, updating pending hits and halo positions.
+     *
+     * @param coord the coordinate that was shot
+     * @param result the result of the shot
+     * @param historyData the game history data to update
+     */
+    private static void processHitOrMiss(String coord, IGame.ShotResult result, GameHistoryData historyData) {
+        // Pending hit - ship hit but not sunk
+        if (result.valid() && !result.repeated() && result.ship() != null && !result.sunk()) {
+            if (!historyData.pendingHits.contains(coord)) {
+                historyData.pendingHits.add(coord);
+            }
+        }
+
+        // Ship sunk - remove from pending and add halo positions
+        if (result.valid() && result.sunk() && result.ship() != null) {
+            removeShipPositionsFromPending(result.ship(), historyData);
+            addHaloPositionsForSunkShip(result.ship(), historyData);
+        }
+    }
+
+    /**
+     * Removes all positions of a sunk ship from the pending hits list.
+     *
+     * @param ship the sunk ship
+     * @param historyData the game history data to update
+     */
+    private static void removeShipPositionsFromPending(IShip ship, GameHistoryData historyData) {
+        for (IPosition shipPos : ship.getPositions()) {
+            String shipCoord = positionToCoordinate(shipPos);
+            historyData.pendingHits.remove(shipCoord);
+        }
+    }
+
+    /**
+     * Adds all halo (adjacent) positions around a sunk ship to the halo positions list.
+     *
+     * @param ship the sunk ship
+     * @param historyData the game history data to update
+     */
+    private static void addHaloPositionsForSunkShip(IShip ship, GameHistoryData historyData) {
+        for (IPosition shipPos : ship.getPositions()) {
+            addAdjacentHaloPositions(shipPos, historyData);
+        }
+    }
+
+    /**
+     * Adds all valid adjacent positions around a ship position to the halo list.
+     *
+     * @param shipPos the position of a ship cell
+     * @param historyData the game history data to update
+     */
+    private static void addAdjacentHaloPositions(IPosition shipPos, GameHistoryData historyData) {
+        for (int dr = -1; dr <= 1; dr++) {
+            for (int dc = -1; dc <= 1; dc++) {
+                if (dr == 0 && dc == 0) continue; // Skip the ship position itself
+                
+                int nr = shipPos.getRow() + dr;
+                int nc = shipPos.getColumn() + dc;
+                
+                if (isValidBoardPosition(nr, nc)) {
+                    String haloCoord = String.valueOf((char)('A' + nr)) + (nc + 1);
+                    if (!historyData.haloPositions.contains(haloCoord)) {
+                        historyData.haloPositions.add(haloCoord);
                     }
                 }
             }
         }
+    }
 
-        // Calcular posições DISPONÍVEIS diretamente em Java
+    /**
+     * Checks if a position is within board boundaries.
+     *
+     * @param row the row index
+     * @param col the column index
+     * @return true if the position is valid, false otherwise
+     */
+    private static boolean isValidBoardPosition(int row, int col) {
+        return row >= 0 && row < 10 && col >= 0 && col < 10;
+    }
+
+    /**
+     * Calculates the list of available positions for the next move.
+     * Available positions are those not yet fired and not in halo zones.
+     *
+     * @param historyData the game history data
+     * @return a list of available position coordinates
+     */
+    private static List<String> calculateAvailablePositions(GameHistoryData historyData) {
         List<String> available = new ArrayList<>();
+        
         for (int r = 0; r < 10; r++) {
             for (int c = 0; c < 10; c++) {
                 String coord = String.valueOf((char)('A' + r)) + (c + 1);
-                if (!firedList.contains(coord) && !haloPositions.contains(coord)) {
+                
+                if (!historyData.firedList.contains(coord) && !historyData.haloPositions.contains(coord)) {
                     available.add(coord);
                 }
             }
         }
+        
+        return available;
+    }
 
-        // Resumo da última jogada
-        IMove last = moves.get(moves.size() - 1);
-        StringBuilder lastMove = new StringBuilder();
-        lastMove.append("Última rajada (").append(last.getNumber()).append("): ");
-        for (IPosition pos : last.getShots()) {
-            lastMove.append((char)('A' + pos.getRow())).append(pos.getColumn() + 1).append(" ");
-        }
-        lastMove.append("-> ").append(last.processEnemyFire(false));
+    /**
+     * Builds the final game history summary string.
+     *
+     * @param moves the list of moves
+     * @param historyData the game history data
+     * @param availablePositions the available positions for next move
+     * @return the formatted summary string
+     */
+    private static String buildHistorySummary(List<IMove> moves, GameHistoryData historyData, List<String> availablePositions) {
+        IMove lastMove = moves.get(moves.size() - 1);
+        String lastMoveDescription = buildLastMoveDescription(lastMove);
 
         StringBuilder sb = new StringBuilder();
         sb.append("Rajada número: ").append(moves.size() + 1).append("\n");
-        sb.append("POSIÇÕES DISPONÍVEIS (escolhe APENAS destas): ").append(String.join(", ", available)).append("\n");
-        sb.append("ACERTOS PENDENTES (foca aqui PRIMEIRO): ").append(pendingHits.isEmpty() ? "nenhum" : String.join(", ", pendingHits)).append("\n");
-        sb.append(lastMove).append("\n");
+        sb.append("POSIÇÕES DISPONÍVEIS (escolhe APENAS destas): ").append(String.join(", ", availablePositions)).append("\n");
+        sb.append("ACERTOS PENDENTES (foca aqui PRIMEIRO): ").append(historyData.pendingHits.isEmpty() ? "nenhum" : String.join(", ", historyData.pendingHits)).append("\n");
+        sb.append(lastMoveDescription).append("\n");
         sb.append("Escolhe 3 posições da lista DISPONÍVEIS acima. Não uses nenhuma outra.");
 
         return sb.toString();
+    }
+
+    /**
+     * Builds a description of the last move for display.
+     *
+     * @param lastMove the last move to describe
+     * @return the formatted description
+     */
+    private static String buildLastMoveDescription(IMove lastMove) {
+        StringBuilder lastMoveDesc = new StringBuilder();
+        lastMoveDesc.append("Última rajada (").append(lastMove.getNumber()).append("): ");
+        
+        for (IPosition pos : lastMove.getShots()) {
+            lastMoveDesc.append((char)('A' + pos.getRow())).append(pos.getColumn() + 1).append(" ");
+        }
+        
+        lastMoveDesc.append("-> ").append(lastMove.processEnemyFire(false));
+        return lastMoveDesc.toString();
     }
 
 }
