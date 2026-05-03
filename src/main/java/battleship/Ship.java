@@ -113,10 +113,8 @@ public abstract class Ship implements IShip
 		this.bearing = Objects.requireNonNull(bearing, "Ship's bearing must not be null");
 		this.pos = Objects.requireNonNull(pos, "Ship's position must not be null");
 	
-		this.category = category;
-		this.bearing = bearing;
-		this.pos = pos;
-		this.size = size;
+
+        this.size = size;
 
 		positions = new ArrayList<>();
     }
@@ -225,7 +223,7 @@ public abstract class Ship implements IShip
     {
 	for (int i = 0; i < getSize(); i++)
 	    if (!getPositions().get(i).isHit())
-		return true;
+		    return true;
 	return false;
     }
 
@@ -245,7 +243,7 @@ public abstract class Ship implements IShip
 	int top = getPositions().get(0).getRow();
 	for (int i = 1; i < getSize(); i++)
 	    if (getPositions().get(i).getRow() < top)
-		top = getPositions().get(i).getRow();
+		    top = getPositions().get(i).getRow();
 	return top;
     }
 
@@ -265,7 +263,7 @@ public abstract class Ship implements IShip
 	int bottom = getPositions().get(0).getRow();
 	for (int i = 1; i < getSize(); i++)
 	    if (getPositions().get(i).getRow() > bottom)
-		bottom = getPositions().get(i).getRow();
+		    bottom = getPositions().get(i).getRow();
 	return bottom;
     }
 
@@ -285,7 +283,7 @@ public abstract class Ship implements IShip
 	int left = getPositions().get(0).getColumn();
 	for (int i = 1; i < getSize(); i++)
 	    if (getPositions().get(i).getColumn() < left)
-		left = getPositions().get(i).getColumn();
+		    left = getPositions().get(i).getColumn();
 	return left;
     }
 
@@ -305,7 +303,7 @@ public abstract class Ship implements IShip
 	int right = getPositions().get(0).getColumn();
 	for (int i = 1; i < getSize(); i++)
 	    if (getPositions().get(i).getColumn() > right)
-		right = getPositions().get(i).getColumn();
+		    right = getPositions().get(i).getColumn();
 	return right;
     }
 
@@ -323,12 +321,15 @@ public abstract class Ship implements IShip
     @Override
     public boolean occupies(IPosition pos)
     {
-		assert pos != null;
+        boolean result = false;
+        assert pos != null;
 
 		for (int i = 0; i < getSize(); i++)
-			if (getPositions().get(i).equals(pos))
-				return true;
-		return false;
+			if (getPositions().get(i).equals(pos)) {
+                result = true;
+                break;
+            }
+        return result;
     }
 
 	/**
@@ -350,7 +351,7 @@ public abstract class Ship implements IShip
 		Iterator<IPosition> otherPos = other.getPositions().iterator();
 		while (otherPos.hasNext())
 			if (tooCloseTo(otherPos.next()))
-			return true;
+			    return true;
 
 		return false;
     }
@@ -373,7 +374,7 @@ public abstract class Ship implements IShip
 
 		for (int i = 0; i < this.getSize(); i++)
 			if (getPositions().get(i).isAdjacentTo(pos))
-			return true;
+			    return true;
 		return false;
     }
 
