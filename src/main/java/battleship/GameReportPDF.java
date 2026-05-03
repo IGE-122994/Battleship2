@@ -13,7 +13,6 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.lowagie.text.pdf.draw.LineSeparator;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
 import java.io.FileOutputStream;
@@ -363,16 +362,12 @@ public class GameReportPDF {
                 if (r.sunk()) sunk++;
             }
         }
-        return buildSummaryString(hits, sunk, misses, repeated, outside);
-    }
-
-    private static @NotNull String buildSummaryString(int hits, int sunk, int misses, int repeated, int outside) {
         StringBuilder s = new StringBuilder();
-        if (hits > 0) s.append(hits).append(" acerto(s) ");
-        if (sunk > 0) s.append("(").append(sunk).append(" afundado(s)) ");
-        if (misses > 0) s.append(misses).append(" agua ");
+        if (hits     > 0) s.append(hits).append(" acerto(s) ");
+        if (sunk     > 0) s.append("(").append(sunk).append(" afundado(s)) ");
+        if (misses   > 0) s.append(misses).append(" agua ");
         if (repeated > 0) s.append(repeated).append(" repetido(s) ");
-        if (outside > 0) s.append(outside).append(" exterior ");
+        if (outside  > 0) s.append(outside).append(" exterior ");
         return s.isEmpty() ? "-" : s.toString().trim();
     }
 }

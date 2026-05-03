@@ -5,7 +5,6 @@ package battleship;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 /**
  * The type Fleet.
@@ -181,10 +180,10 @@ public class Fleet implements IFleet
     {
 		assert pos != null;
 
-		for (IShip ship : ships)
-			if (ship.occupies(pos))
-				return ship;
-		return null;
+		return ships.stream()
+			.filter(ship -> ship.occupies(pos))
+			.findFirst()
+			.orElse(null);
     }
 
 	/**
@@ -207,12 +206,13 @@ public class Fleet implements IFleet
 	 * @param s the s
 	 * @return the boolean
 	 */
-	private boolean colisionRisk(IShip s)
-    {
+	private boolean colisionRisk(IShip s) {
 		assert s != null;
 
-        return IntStream.range(0, ships.size()).anyMatch(i -> ships.get(i).tooCloseTo(s));
-    }
+		// O anyMatch devolve true imediatamente se algum navio estiver muito perto
+		return ships.stream()
+				.anyMatch(ship -> ship.tooCloseTo(s));
+	}
 
 	/**
 	 * This operation prints all the given ships
