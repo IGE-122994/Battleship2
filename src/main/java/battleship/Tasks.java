@@ -63,96 +63,28 @@ public class Tasks {
     private static void handleCommand(String command, Scanner in, MenuState state) {
         switch (command) {
             case GERAFROTA:
-                state.myFleet = Fleet.createRandom();
-                state.game = new Game(state.myFleet);
-                state.meusTiros= 0;
-                state.game.printMyBoard(false, true);
+                handleGeraFrota(state);
                 break;
             case LEFROTA:
-                state.myFleet = buildFleet(in);
-                state.game = new Game(state.myFleet);
-                state.meusTiros= 0;
-                state.game.printMyBoard(false, true);
+                handleLeFrota(in, state);
                 break;
             case STATUS:
-                if (state.myFleet != null)
-                    state.myFleet.printStatus();
+                handleStatus(state);
                 break;
             case MAPA:
-                if (state.myFleet != null)
-                    state.game.printMyBoard(false, true);
+                handleMapa(state);
                 break;
             case RAJADA:
-                if (state.game != null) {
-                    state.game.readEnemyFire(in);
-                    state.meusTiros +=3;
-                    state.myFleet.printStatus();
-                    state.game.printMyBoard(true, false);
-
-                    if (state.game.getRemainingShips() == 0) {
-                        state.game.over();
-                        DatabaseManager.saveGameResult("Jogador", state.meusTiros);
-                        System.exit(0);
-                    }
-                }
+                handleRajada(in, state);
                 break;
             case SIMULA:
-                if (state.game != null) {
-                    int contadorTiros = 0;
-                    while (state.game.getRemainingShips() > 0){
-                        state.game.randomEnemyFire();
-                        contadorTiros++;
-                        state.myFleet.printStatus();
-                        state.game.printMyBoard(true, false);
-                        try {
-                            Thread.sleep(3000);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt(); // Best practice: restore interrupt status
-                        }
-                    }
-
-                    if (state.game.getRemainingShips() == 0) {
-                        state.game.over();
-                        DatabaseManager.saveGameResult("Computador (Simulação)", contadorTiros);
-                        System.exit(0);
-                    }
-                }
+                handleSimula(state);
                 break;
             case TIROS:
-                if (state.game != null)
-                    state.game.printMyBoard(true, true);
+                handleTiros(state);
                 break;
             case LLM:
-                if (state.game != null) {
-                    HuggingFaceClient llmClient = new HuggingFaceClient();
-                    try {
-                        llmClient.initialize();
-                        System.out.println("A jogar contra o LLM...");
-                        int failCount = 0;
-                        while (state.game.getRemainingShips() > 0 && failCount < 5) {
-                            String history = HuggingFaceClient.buildGameHistory(state.game.getAlienMoves());
-                            try {
-                                List<IPosition> shots = llmClient.getNextMove(history);
-                                state.game.fireShots(shots);
-                                state.myFleet.printStatus();
-                                state.game.printMyBoard(true, false);
-                                failCount = 0;
-                                if (state.game.getRemainingShips() == 0) {
-                                    state.game.over();
-                                    System.exit(0);
-                                }
-                            } catch (Exception e) {
-                                failCount++;
-                                System.err.println("Erro na jogada (" + failCount + "/5): " + e.getMessage());
-                            }
-                        }
-                        if (state.game.getRemainingShips() > 0) {
-                            System.out.println("LLM desistiu após erros consecutivos.");
-                        }
-                    } catch (Exception e) {
-                        System.err.println("Erro na comunicação com o LLM: " + e.getMessage());
-                    }
-                }
+                handleLlm(state);
                 break;
             case AJUDA:
                 menuHelp();
@@ -162,7 +94,107 @@ public class Tasks {
         }
     }
 
-	/**
+    private static void handleLlm(MenuState state) {
+        if (state.game != null) {
+            HuggingFaceClient llmClient = new HuggingFaceClient();
+            try {
+                llmClient.initialize();
+                System.out.println("A jogar contra o LLM...");
+                int failCount = 0;
+                while (state.game.getRemainingShips() > 0 && failCount < 5) {
+                    String history = HuggingFaceClient.buildGameHistory(state.game.getAlienMoves());
+                    try {
+                        List<IPosition> shots = llmClient.getNextMove(history);
+                        state.game.fireShots(shots);
+                        state.myFleet.printStatus();
+                        state.game.printMyBoard(true, false);
+                        failCount = 0;
+                        if (state.game.getRemainingShips() == 0) {
+                            state.game.over();
+                            System.exit(0);
+                        }
+                    } catch (Exception e) {
+                        failCount++;
+                        System.err.println("Erro na jogada (" + failCount + "/5): " + e.getMessage());
+                    }
+                }
+                if (state.game.getRemainingShips() > 0) {
+                    System.out.println("LLM desistiu após erros consecutivos.");
+                }
+            } catch (Exception e) {
+                System.err.println("Erro na comunicação com o LLM: " + e.getMessage());
+            }
+        }
+    }
+
+    private static void handleTiros(MenuState state) {
+        if (state.game != null)
+            state.game.printMyBoard(true, true);
+    }
+
+    private static void handleSimula(MenuState state) {
+        if (state.game != null) {
+            int contadorTiros = 0;
+            while (state.game.getRemainingShips() > 0){
+                state.game.randomEnemyFire();
+                contadorTiros++;
+                state.myFleet.printStatus();
+                state.game.printMyBoard(true, false);
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt(); // Best practice: restore interrupt status
+                }
+            }
+
+            if (state.game.getRemainingShips() == 0) {
+                state.game.over();
+                DatabaseManager.saveGameResult("Computador (Simulação)", contadorTiros);
+                System.exit(0);
+            }
+        }
+    }
+
+    private static void handleRajada(Scanner in, MenuState state) {
+        if (state.game != null) {
+            state.game.readEnemyFire(in);
+            state.meusTiros +=3;
+            state.myFleet.printStatus();
+            state.game.printMyBoard(true, false);
+
+            if (state.game.getRemainingShips() == 0) {
+                state.game.over();
+                DatabaseManager.saveGameResult("Jogador", state.meusTiros);
+                System.exit(0);
+            }
+        }
+    }
+
+    private static void handleMapa(MenuState state) {
+        if (state.myFleet != null)
+            state.game.printMyBoard(false, true);
+    }
+
+    private static void handleStatus(MenuState state) {
+        if (state.myFleet != null)
+            state.myFleet.printStatus();
+    }
+
+    private static void handleLeFrota(Scanner in, MenuState state) {
+        state.myFleet = buildFleet(in);
+        state.game = new Game(state.myFleet);
+        state.meusTiros= 0;
+        state.game.printMyBoard(false, true);
+    }
+
+    private static void handleGeraFrota(MenuState state) {
+        state.myFleet = Fleet.createRandom();
+        state.game = new Game(state.myFleet);
+        state.meusTiros= 0;
+        state.game.printMyBoard(false, true);
+    }
+
+    /**
 	 * This function provides help information about the menu commands.
 	 */
 	public static void menuHelp() {
