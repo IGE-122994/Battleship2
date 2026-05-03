@@ -29,12 +29,40 @@ public class Game implements IGame
 		assert fleet != null;
 		assert moves != null;
 
-		char[][] map = new char[BOARD_SIZE][BOARD_SIZE];
+		char[][] map = initializeMap();
+		markShipsOnMap(map, fleet);
 
+		if (show_shots)
+			markShotsOnMap(map, moves);
+
+		printBoardGrid(map);
+
+		if (showLegend)
+			printLegend();
+
+		System.out.println();
+	}
+
+	/**
+	 * Initializes the game board map with empty markers.
+	 *
+	 * @return a 2D char array representing the game board, initialized with empty markers.
+	 */
+	private static char[][] initializeMap() {
+		char[][] map = new char[BOARD_SIZE][BOARD_SIZE];
 		for (int r = 0; r < BOARD_SIZE; r++)
 			for (int c = 0; c < BOARD_SIZE; c++)
 				map[r][c] = EMPTY_MARKER;
+		return map;
+	}
 
+	/**
+	 * Marks ships and their adjacent positions on the game board map.
+	 *
+	 * @param map   the 2D char array representing the game board.
+	 * @param fleet the fleet containing the ships to be marked.
+	 */
+	private static void markShipsOnMap(char[][] map, IFleet fleet) {
 		for (IShip ship : fleet.getShips()) {
 			for (IPosition ship_pos : ship.getPositions())
 				map[ship_pos.getRow()][ship_pos.getColumn()] = SHIP_MARKER;
@@ -42,43 +70,70 @@ public class Game implements IGame
 				for (IPosition adjacent_pos : ship.getAdjacentPositions())
 					map[adjacent_pos.getRow()][adjacent_pos.getColumn()] = SHIP_ADJACENT_MARKER;
 		}
-
-		if (show_shots)
-			for (IMove move : moves)
-				for (IPosition shot : move.getShots()) {
-					if (shot.isInside()){
-						int row = shot.getRow();
-						int col = shot.getColumn();
-						if (map[row][col] == SHIP_MARKER)
-							map[row][col] = SHOT_SHIP_MARKER;
-						if (map[row][col] == EMPTY_MARKER || map[row][col] == SHIP_ADJACENT_MARKER)
-							map[row][col] = SHOT_WATER_MARKER;
-					}
-				}
-
-		printGridToConsole(map);
-
-		if (showLegend) {
-            System.out.println(MessageManager.get("game.legend.line1", SHIP_MARKER, SHIP_ADJACENT_MARKER, EMPTY_MARKER));
-            System.out.println(MessageManager.get("game.legend.line2", SHOT_SHIP_MARKER, SHOT_WATER_MARKER));
-		}
-		System.out.println();
 	}
 
-	private static void printGridToConsole(char[][] map) {
+	/**
+	 * Marks shots on the game board map, distinguishing between hits and misses.
+	 *
+	 * @param map   the 2D char array representing the game board.
+	 * @param moves the list of moves containing the shots to be marked.
+	 */
+	private static void markShotsOnMap(char[][] map, List<IMove> moves) {
+		for (IMove move : moves)
+			for (IPosition shot : move.getShots()) {
+				if (shot.isInside()) {
+					int row = shot.getRow();
+					int col = shot.getColumn();
+					if (map[row][col] == SHIP_MARKER)
+						map[row][col] = SHOT_SHIP_MARKER;
+					else if (map[row][col] == EMPTY_MARKER || map[row][col] == SHIP_ADJACENT_MARKER)
+						map[row][col] = SHOT_WATER_MARKER;
+				}
+			}
+	}
+
+	/**
+	 * Prints the game board grid to the console, including column headers, row labels,
+	 * and the board borders.
+	 *
+	 * @param map the 2D char array representing the game board to be printed.
+	 */
+	private static void printBoardGrid(char[][] map) {
+		printColumnHeaders();
+		printTopBorder();
+		printRows(map);
+		printBottomBorder();
+	}
+
+	/**
+	 * Prints the column headers (1-10) for the board.
+	 */
+	private static void printColumnHeaders() {
 		System.out.println();
 		System.out.print("    ");
 		for (int col = 0; col < BOARD_SIZE; col++) {
 			System.out.print(" " + (col + 1));
 		}
 		System.out.println();
+	}
 
+	/**
+	 * Prints the top border of the board.
+	 */
+	private static void printTopBorder() {
 		System.out.print("   +-");
 		for (int col = 0; col < BOARD_SIZE; col++) {
 			System.out.print("--");
 		}
 		System.out.println("+");
+	}
 
+	/**
+	 * Prints all rows of the board with row labels and cell contents.
+	 *
+	 * @param map the 2D char array representing the game board.
+	 */
+	private static void printRows(char[][] map) {
 		for (int row = 0; row < BOARD_SIZE; row++) {
 			Position pos = new Position(row, 0);
 			char rowLabel = pos.getClassicRow();
@@ -87,11 +142,24 @@ public class Game implements IGame
 				System.out.print(" " + map[row][col]);
 			System.out.println(" |");
 		}
+	}
 
+	/**
+	 * Prints the bottom border of the board.
+	 */
+	private static void printBottomBorder() {
 		System.out.print("   +");
 		for (int col = 0; col < BOARD_SIZE; col++)
 			System.out.print("--");
 		System.out.println("-+");
+	}
+
+	/**
+	 * Prints the legend explaining the symbols used on the board.
+	 */
+	private static void printLegend() {
+		System.out.println(MessageManager.get("game.legend.line1", SHIP_MARKER, SHIP_ADJACENT_MARKER, EMPTY_MARKER));
+		System.out.println(MessageManager.get("game.legend.line2", SHOT_SHIP_MARKER, SHOT_WATER_MARKER));
 	}
 
 	/**
@@ -166,12 +234,12 @@ public class Game implements IGame
 	private Duration previousAccumulated = Duration.ZERO;
 
 	//------------------------------------------------------------------
-    /**
-     * Constructs a new game instance with the player's fleet.
-     *
-     * @param myFleet the fleet of the player containing the ships.
-     */
-    public Game(IFleet myFleet)
+	/**
+	 * Constructs a new game instance with the player's fleet.
+	 *
+	 * @param myFleet the fleet of the player containing the ships.
+	 */
+	public Game(IFleet myFleet)
 	{
 		this.moveNumber = 1;
 
@@ -189,44 +257,44 @@ public class Game implements IGame
 		gameTimer.begin();
 	}
 
-    /**
-     * Returns the player's fleet.
-     *
-     * @return the player's fleet.
-     */
+	/**
+	 * Returns the player's fleet.
+	 *
+	 * @return the player's fleet.
+	 */
 	@Override
 	public IFleet getMyFleet()
 	{
 		return myFleet;
 	}
 
-    /**
-     * Returns the list of moves made by the enemy.
-     *
-     * @return list of enemy moves.
-     */
+	/**
+	 * Returns the list of moves made by the enemy.
+	 *
+	 * @return list of enemy moves.
+	 */
 	@Override
 	public List<IMove> getAlienMoves()
 	{
 		return alienMoves;
 	}
 
-    /**
-     * Returns the enemy fleet.
-     *
-     * @return the enemy fleet.
-     */
+	/**
+	 * Returns the enemy fleet.
+	 *
+	 * @return the enemy fleet.
+	 */
 	@Override
 	public IFleet getAlienFleet()
 	{
 		return myFleet;
 	}
 
-    /**
-     * Returns the list of moves made by the player.
-     *
-     * @return list of player moves.
-     */
+	/**
+	 * Returns the list of moves made by the player.
+	 *
+	 * @return list of player moves.
+	 */
 	@Override
 	public List<IMove> getMyMoves()
 	{
@@ -243,51 +311,106 @@ public class Game implements IGame
 	 * @throws RuntimeException if there is an error during the JSON serialization of the shots.
 	 */
 	public String randomEnemyFire() {
+		List<IPosition> candidateShots = generateCandidateShots();
+		List<IPosition> shots = selectRandomShots(candidateShots);
 
-		// Criar uma instância de Random com uma seed baseada no timestamp atual
+		printSelectedShots(shots);
+		this.fireShots(shots);
+
+		return Game.jsonShots(shots);
+	}
+
+	/**
+	 * Generates all candidate shot positions by filtering out already struck and adjacent positions.
+	 * Excludes positions adjacent to sunk ships and positions that have already been targeted.
+	 *
+	 * @return a list of valid candidate positions for random shots.
+	 */
+	private List<IPosition> generateCandidateShots() {
+		Set<IPosition> usablePositions = createAllBoardPositions();
+		filterSunkShipAdjacencies(usablePositions);
+		filterAlreadyShotPositions(usablePositions);
+		return new ArrayList<>(usablePositions);
+	}
+
+	/**
+	 * Creates a set containing all positions on the game board.
+	 *
+	 * @return a set of all board positions.
+	 */
+	private Set<IPosition> createAllBoardPositions() {
+		Set<IPosition> positions = new HashSet<>();
+		for (int r = 0; r < BOARD_SIZE; r++)
+			for (int c = 0; c < BOARD_SIZE; c++)
+				positions.add(new Position(r, c));
+		return positions;
+	}
+
+	/**
+	 * Removes all positions adjacent to sunk ships from the usable positions set.
+	 * This prevents the AI from shooting near already destroyed ships.
+	 *
+	 * @param usablePositions the set of usable positions to be filtered.
+	 */
+	private void filterSunkShipAdjacencies(Set<IPosition> usablePositions) {
+		for (IShip ship : this.myFleet.getSunkShips())
+			usablePositions.removeAll(ship.getAdjacentPositions());
+	}
+
+	/**
+	 * Removes all positions that have already been shot by previous alien moves
+	 * from the usable positions set. This prevents duplicate shots.
+	 *
+	 * @param usablePositions the set of usable positions to be filtered.
+	 */
+	private void filterAlreadyShotPositions(Set<IPosition> usablePositions) {
+		for (IMove move : this.alienMoves)
+			usablePositions.removeAll(move.getShots());
+	}
+
+	/**
+	 * Selects a list of random unique shot positions from the candidate positions.
+	 * If there are fewer candidates than NUMBER_SHOTS, all candidates are selected
+	 * and the last position is repeated to fill the remaining slots.
+	 *
+	 * @param candidateShots the list of candidate positions to select from.
+	 * @return a list of random shot positions with size equal to NUMBER_SHOTS.
+	 */
+	private List<IPosition> selectRandomShots(List<IPosition> candidateShots) {
 		Random random = new Random(System.currentTimeMillis());
+		List<IPosition> shots = new ArrayList<>();
 
-		// Substitute Algorithm: Usar Streams para filtrar as posições válidas de forma mais direta
-		List<IPosition> candidateShots = java.util.stream.IntStream.range(0, BOARD_SIZE)
-				.boxed()
-				.flatMap(r -> java.util.stream.IntStream.range(0, BOARD_SIZE).mapToObj(c -> new Position(r, c)))
-				.filter(pos -> !repeatedShot(pos)) // Filtra posições onde já se atirou
-				.filter(pos -> myFleet.getSunkShips().stream()
-						.noneMatch(ship -> ship.getAdjacentPositions().contains(pos))) // Filtra adjacentes a navios afundados
-				.collect(java.util.stream.Collectors.toList());
-
-
-		// Criar lista para armazenar os tiros
-		List<IPosition> shots = new ArrayList<IPosition>();
-
-		System.out.println();
-		// Gerar coordenadas únicas até atingir o número definido por NUMBER_SHOTS
+		if (candidateShots.isEmpty())
+			return shots;
 
 		IPosition newShot = null;
-		if (candidateShots.size() >= Game.NUMBER_SHOTS)
-			while (shots.size() < Game.NUMBER_SHOTS) {
-				newShot = candidateShots.get(random.nextInt(candidateShots.size()));
-				if (!shots.contains(newShot))
-					shots.add(newShot);
-			}
-		else {
-			while (shots.size() < candidateShots.size()) {
-				newShot = candidateShots.get(random.nextInt(candidateShots.size()));
-				if (!shots.contains(newShot))
-					shots.add(newShot);
-			}
-			while (shots.size() < Game.NUMBER_SHOTS)
+		int targetSize = Math.min(candidateShots.size(), Game.NUMBER_SHOTS);
+
+		// Fill with unique random positions
+		while (shots.size() < targetSize) {
+			newShot = candidateShots.get(random.nextInt(candidateShots.size()));
+			if (!shots.contains(newShot))
 				shots.add(newShot);
 		}
 
+		// If we need more shots, repeat the last position
+		while (shots.size() < Game.NUMBER_SHOTS)
+			shots.add(newShot);
+
+		return shots;
+	}
+
+	/**
+	 * Prints the randomly selected shots to the console.
+	 *
+	 * @param shots the list of shot positions to be printed.
+	 */
+	private void printSelectedShots(List<IPosition> shots) {
+		System.out.println();
 		System.out.println(MessageManager.get("game.burst"));
 		for (IPosition shot : shots)
 			System.out.print(shot + " ");
 		System.out.println();
-
-		this.fireShots(shots);
-
-		return Game.jsonShots(shots);
 	}
 
 
@@ -393,8 +516,8 @@ public class Game implements IGame
 		Duration accumulated = gameTimer.getDuration();
 		Duration turnDuration = accumulated.minus(previousAccumulated);
 		previousAccumulated = accumulated;
-        System.out.println(MessageManager.get("game.turnDuration", GameTimer.formatDuration(turnDuration)));
-        System.out.println(MessageManager.get("game.accumulatedDuration", GameTimer.formatDuration(accumulated)));
+		System.out.println(MessageManager.get("game.turnDuration", GameTimer.formatDuration(turnDuration)));
+		System.out.println(MessageManager.get("game.accumulatedDuration", GameTimer.formatDuration(accumulated)));
 	}
 
 	/**
@@ -411,32 +534,71 @@ public class Game implements IGame
 
 		assert pos != null;
 
-        boolean outside = !pos.isInside();
-		if (outside) {
-			countInvalidShots++;
-			return new ShotResult(false, false, null, false);
-		}
+		// Check for invalid position
+		boolean isOutside = !pos.isInside();
+		if (isOutside)
+			return handleInvalidShot();
 
-		if (isRepeated || repeatedShot(pos)) {
-			countRepeatedShots++;
-			return new ShotResult(true, true, null, false);
-		}
+		// Check for repeated shot
+		if (isRepeated || repeatedShot(pos))
+			return handleRepeatedShot();
 
+		// Attempt to hit a ship at the position
 		IShip ship = myFleet.shipAt(pos);
+		if (ship == null)
+			return handleMiss();
 
-		// Guard Clause: Se não há navio, sai imediatamente
-		if (ship == null) {
-			return new ShotResult(true, false, null, false);
-		}
+		return handleHit(ship, pos);
+	}
 
-		// O resto do código (o "caminho feliz") deixa de precisar do "else"
+	/**
+	 * Handles an invalid shot (outside board boundaries).
+	 * Increments the invalid shot counter.
+	 *
+	 * @return a ShotResult indicating an invalid shot.
+	 */
+	private ShotResult handleInvalidShot() {
+		countInvalidShots++;
+		return new ShotResult(false, false, null, false);
+	}
+
+	/**
+	 * Handles a repeated shot (shot at a previously targeted position).
+	 * Increments the repeated shot counter.
+	 *
+	 * @return a ShotResult indicating a repeated shot.
+	 */
+	private ShotResult handleRepeatedShot() {
+		countRepeatedShots++;
+		return new ShotResult(true, true, null, false);
+	}
+
+	/**
+	 * Handles a miss (no ship at the targeted position).
+	 *
+	 * @return a ShotResult indicating a miss.
+	 */
+	private ShotResult handleMiss() {
+		return new ShotResult(true, false, null, false);
+	}
+
+	/**
+	 * Handles a hit on a ship. Updates the ship's state, increments hit and sink counters
+	 * as appropriate, and determines if the ship was sunk by this shot.
+	 *
+	 * @param ship the ship that was hit.
+	 * @param pos the position where the ship was hit.
+	 * @return a ShotResult indicating a successful hit, and whether the ship was sunk.
+	 */
+	private ShotResult handleHit(IShip ship, IPosition pos) {
 		ship.shoot(pos);
 		countHits++;
-        boolean notFloating = !ship.stillFloating();
-		if (notFloating) {
+
+		boolean isSunk = !ship.stillFloating();
+		if (isSunk)
 			countSinks++;
-		}
-		return new ShotResult(true, false, ship, notFloating);
+
+		return new ShotResult(true, false, ship, isSunk);
 	}
 
 	@Override
@@ -470,12 +632,12 @@ public class Game implements IGame
 		return floatingShips.size();
 	}
 
-    /**
-     * Checks if a given position has already been shot by the enemy.
-     *
-     * @param pos position to check.
-     * @return true if the position has already been shot, false otherwise.
-     */
+	/**
+	 * Checks if a given position has already been shot by the enemy.
+	 *
+	 * @param pos position to check.
+	 * @return true if the position has already been shot, false otherwise.
+	 */
 	public boolean repeatedShot(IPosition pos)
 	{
 		assert pos != null;
@@ -486,45 +648,45 @@ public class Game implements IGame
 		return false;
 	}
 
-    /**
-     * Prints the player's board to the console.
-     *
-     * @param show_shots  whether to show shots.
-     * @param show_legend whether to show the legend.
-     */
+	/**
+	 * Prints the player's board to the console.
+	 *
+	 * @param show_shots  whether to show shots.
+	 * @param show_legend whether to show the legend.
+	 */
 	public void printMyBoard(boolean show_shots, boolean show_legend)
 	{
 		Game.printBoard(this.myFleet, this.alienMoves, show_shots, show_legend);
 	}
 
-    /**
-     * Prints the enemy's board to the console.
-     *
-     * @param show_shots  whether to show shots.
-     * @param show_legend whether to show the legend.
-     */
+	/**
+	 * Prints the enemy's board to the console.
+	 *
+	 * @param show_shots  whether to show shots.
+	 * @param show_legend whether to show the legend.
+	 */
 	public void printAlienBoard(boolean show_shots, boolean show_legend)
 	{
 		Game.printBoard(this.alienFleet, this.myMoves, show_shots, show_legend);
 	}
 
-    /**
-     * Finalizes the game, prints a closing message and displays the total duration
-     * of the match.
-     *
-     * <p>
-     * This method stops the {@link GameTimer}, retrieves the total elapsed time
-     * since the beginning of the game, and prints it in a human-readable format.
-     * </p>
-     *
-     * <p>
-     * After displaying the final information, this method also generates a PDF
-     * report of the match using {@link GameReportPDF}. The report includes relevant
-     * game data and the total duration, allowing the user to keep a permanent
-     * record of the session.
-     * </p>
-     */
-    public void over() {
+	/**
+	 * Finalizes the game, prints a closing message and displays the total duration
+	 * of the match.
+	 *
+	 * <p>
+	 * This method stops the {@link GameTimer}, retrieves the total elapsed time
+	 * since the beginning of the game, and prints it in a human-readable format.
+	 * </p>
+	 *
+	 * <p>
+	 * After displaying the final information, this method also generates a PDF
+	 * report of the match using {@link GameReportPDF}. The report includes relevant
+	 * game data and the total duration, allowing the user to keep a permanent
+	 * record of the session.
+	 * </p>
+	 */
+	public void over() {
 		System.out.println();
 		System.out.println("+--------------------------------------------------------------+");
 		System.out.println("| " + MessageManager.get("game.over") + " |");
@@ -532,7 +694,7 @@ public class Game implements IGame
 
 		gameTimer.end();
 		String totalDuration = GameTimer.formatDuration(gameTimer.getDuration());
-        System.out.println(MessageManager.get("game.totalDuration", totalDuration));
+		System.out.println(MessageManager.get("game.totalDuration", totalDuration));
 
 		GameReportPDF.generate(this, totalDuration);
 	}
