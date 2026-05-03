@@ -535,7 +535,8 @@ public class Game implements IGame
 		assert pos != null;
 
 		// Check for invalid position
-		if (!pos.isInside())
+		boolean isOutside = !pos.isInside();
+		if (isOutside)
 			return handleInvalidShot();
 
 		// Check for repeated shot
