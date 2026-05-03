@@ -176,15 +176,15 @@ public class Fleet implements IFleet
      * @see battleship.IFleet#shipAt(battleship.IPosition)
      */
     @Override
-	public IShip shipAt(IPosition pos) {
+    public IShip shipAt(IPosition pos)
+    {
 		assert pos != null;
 
-		// Transforma o ciclo e os múltiplos retornos num único retorno com Streams
 		return ships.stream()
-				.filter(ship -> ship.occupies(pos))
-				.findFirst()
-				.orElse(null);
-	}
+			.filter(ship -> ship.occupies(pos))
+			.findFirst()
+			.orElse(null);
+    }
 
 	/**
 	 * Is inside board boolean.

@@ -20,22 +20,22 @@ public class Caravel extends Ship {
 		super("Caravela", bearing, pos, 2);
 
 		switch (bearing) {
-			case NORTH, SOUTH:
-                fillVertical(pos);
-                break;
-            case EAST, WEST:
-                fillHorizontal(pos);
-                break;
-        }
+			case NORTH:
+				for (int r = 0; r < this.getSize(); r++)
+					getPositions().add(new Position(pos.getRow() + r, pos.getColumn()));
+				break;
+			case SOUTH:
+				for (int r = 0; r < this.getSize(); r++)
+					getPositions().add(new Position(pos.getRow() + r, pos.getColumn()));
+				break;
+			case EAST:
+				for (int c = 0; c < this.getSize(); c++)
+					getPositions().add(new Position(pos.getRow(), pos.getColumn() + c));
+				break;
+			case WEST:
+				for (int c = 0; c < this.getSize(); c++)
+					getPositions().add(new Position(pos.getRow(), pos.getColumn() + c));
+				break;
+		}
 	}
-
-    private void fillHorizontal(IPosition pos) {
-        for (int c = 0; c < this.getSize(); c++)
-            getPositions().add(new Position(pos.getRow(), pos.getColumn() + c));
-    }
-
-    private void fillVertical(IPosition pos) {
-        for (int r = 0; r < this.getSize(); r++)
-            getPositions().add(new Position(pos.getRow() + r, pos.getColumn()));
-    }
 }
