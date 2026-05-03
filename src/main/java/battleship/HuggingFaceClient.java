@@ -1,8 +1,6 @@
 package battleship;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -28,7 +26,6 @@ public class HuggingFaceClient {
     private static final String MODEL_URL = "https://router.huggingface.co/v1/chat/completions";
 
     private static final ObjectMapper mapper = new ObjectMapper();
-    private static final Logger log = LogManager.getLogger(HuggingFaceClient.class);
 
     private final List<Map<String, String>> history = new ArrayList<>();
     private boolean initialized = false;
@@ -75,7 +72,7 @@ public class HuggingFaceClient {
         history.add(Map.of("role", "user", "content", systemPrompt));
         String response = sendMessage("Confirma que entendeste todas as regras respondendo apenas com: PRONTO");
         initialized = true;
-        log.info("LLM inicializado: {}", response);
+        System.out.println("LLM inicializado: " + response);
     }
 
     /**
@@ -180,7 +177,6 @@ public class HuggingFaceClient {
         return shots;
     }
 
-
     /**
      * Builds a human-readable summary of all moves played so far.
      *
@@ -212,7 +208,6 @@ public class HuggingFaceClient {
     public static String buildGameHistory(List<IMove> moves) {
         if (moves.isEmpty()) return "Nenhuma jogada ainda.";
 
-        // Calcular posições já disparadas
         List<String> firedList = new ArrayList<>();
         List<String> pendingHits = new ArrayList<>();
         List<String> haloPositions = new ArrayList<>();
@@ -224,23 +219,52 @@ public class HuggingFaceClient {
             for (int i = 0; i < shots.size(); i++) {
                 IPosition pos = shots.get(i);
                 String coord = String.valueOf((char)('A' + pos.getRow())) + (pos.getColumn() + 1);
+
                 if (!firedList.contains(coord)) firedList.add(coord);
 
                 IGame.ShotResult r = results.get(i);
+
                 if (r.valid() && !r.repeated() && r.ship() != null && !r.sunk()) {
                     if (!pendingHits.contains(coord)) pendingHits.add(coord);
                 }
+
                 if (r.valid() && r.sunk() && r.ship() != null) {
-                    for (IPosition shipPos : r.ship().getPositions()) {
-                        String shipCoord = String.valueOf((char)('A' + shipPos.getRow())) + (shipPos.getColumn() + 1);
-                        pendingHits.remove(shipCoord);
-                    }
-                    calculateHaloPositions(r, haloPositions);
+                    removeSunkPositions(r.ship(), pendingHits);
+                    calculateHaloPositions(r.ship(), haloPositions);
                 }
             }
         }
 
-        // Calcular posições DISPONÍVEIS diretamente em Java
+        List<String> available = calculateAvailablePositions(firedList, haloPositions);
+        return formatHistoryMessage(moves, available, pendingHits);
+    }
+
+    // --- MÉTODOS EXTRAÍDOS (Extract Method) --- //
+
+    private static void removeSunkPositions(IShip ship, List<String> pendingHits) {
+        for (IPosition shipPos : ship.getPositions()) {
+            String shipCoord = String.valueOf((char)('A' + shipPos.getRow())) + (shipPos.getColumn() + 1);
+            pendingHits.remove(shipCoord);
+        }
+    }
+
+    private static void calculateHaloPositions(IShip ship, List<String> haloPositions) {
+        for (IPosition shipPos : ship.getPositions()) {
+            for (int dr = -1; dr <= 1; dr++) {
+                for (int dc = -1; dc <= 1; dc++) {
+                    if (dr == 0 && dc == 0) continue;
+                    int nr = shipPos.getRow() + dr;
+                    int nc = shipPos.getColumn() + dc;
+                    if (nr >= 0 && nr < 10 && nc >= 0 && nc < 10) {
+                        String haloCoord = String.valueOf((char)('A' + nr)) + (nc + 1);
+                        if (!haloPositions.contains(haloCoord)) haloPositions.add(haloCoord);
+                    }
+                }
+            }
+        }
+    }
+
+    private static List<String> calculateAvailablePositions(List<String> firedList, List<String> haloPositions) {
         List<String> available = new ArrayList<>();
         for (int r = 0; r < 10; r++) {
             for (int c = 0; c < 10; c++) {
@@ -250,8 +274,10 @@ public class HuggingFaceClient {
                 }
             }
         }
+        return available;
+    }
 
-        // Resumo da última jogada
+    private static String formatHistoryMessage(List<IMove> moves, List<String> available, List<String> pendingHits) {
         IMove last = moves.get(moves.size() - 1);
         StringBuilder lastMove = new StringBuilder();
         lastMove.append("Última rajada (").append(last.getNumber()).append("): ");
@@ -270,19 +296,4 @@ public class HuggingFaceClient {
         return sb.toString();
     }
 
-    private static void calculateHaloPositions(IGame.ShotResult r, List<String> haloPositions) {
-        for (IPosition shipPos : r.ship().getPositions()) {
-            for (int dr = -1; dr <= 1; dr++) {
-                for (int dc = -1; dc <= 1; dc++) {
-                    if (dr == 0 && dc == 0) continue;
-                    int nr = shipPos.getRow() + dr;
-                    int nc = shipPos.getColumn() + dc;
-                    if (nr >= 0 && nr < 10 && nc >= 0 && nc < 10) {
-                        String haloCoord = String.valueOf((char)('A' + nr)) + (nc + 1);
-                        if (!haloPositions.contains(haloCoord)) haloPositions.add(haloCoord);
-                    }
-                }
-            }
-        }
-    }
 }
