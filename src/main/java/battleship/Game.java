@@ -31,7 +31,7 @@ public class Game implements IGame
 
 		char[][] map = initializeMap();
 		markShipsOnMap(map, fleet);
-		
+
 		if (show_shots)
 			markShotsOnMap(map, moves);
 
@@ -39,7 +39,7 @@ public class Game implements IGame
 
 		if (showLegend)
 			printLegend();
-		
+
 		System.out.println();
 	}
 
@@ -158,8 +158,8 @@ public class Game implements IGame
 	 * Prints the legend explaining the symbols used on the board.
 	 */
 	private static void printLegend() {
-        System.out.println(MessageManager.get("game.legend.line1", SHIP_MARKER, SHIP_ADJACENT_MARKER, EMPTY_MARKER));
-        System.out.println(MessageManager.get("game.legend.line2", SHOT_SHIP_MARKER, SHOT_WATER_MARKER));
+		System.out.println(MessageManager.get("game.legend.line1", SHIP_MARKER, SHIP_ADJACENT_MARKER, EMPTY_MARKER));
+		System.out.println(MessageManager.get("game.legend.line2", SHOT_SHIP_MARKER, SHOT_WATER_MARKER));
 	}
 
 	/**
@@ -234,12 +234,12 @@ public class Game implements IGame
 	private Duration previousAccumulated = Duration.ZERO;
 
 	//------------------------------------------------------------------
-    /**
-     * Constructs a new game instance with the player's fleet.
-     *
-     * @param myFleet the fleet of the player containing the ships.
-     */
-    public Game(IFleet myFleet)
+	/**
+	 * Constructs a new game instance with the player's fleet.
+	 *
+	 * @param myFleet the fleet of the player containing the ships.
+	 */
+	public Game(IFleet myFleet)
 	{
 		this.moveNumber = 1;
 
@@ -257,44 +257,44 @@ public class Game implements IGame
 		gameTimer.begin();
 	}
 
-    /**
-     * Returns the player's fleet.
-     *
-     * @return the player's fleet.
-     */
+	/**
+	 * Returns the player's fleet.
+	 *
+	 * @return the player's fleet.
+	 */
 	@Override
 	public IFleet getMyFleet()
 	{
 		return myFleet;
 	}
 
-    /**
-     * Returns the list of moves made by the enemy.
-     *
-     * @return list of enemy moves.
-     */
+	/**
+	 * Returns the list of moves made by the enemy.
+	 *
+	 * @return list of enemy moves.
+	 */
 	@Override
 	public List<IMove> getAlienMoves()
 	{
 		return alienMoves;
 	}
 
-    /**
-     * Returns the enemy fleet.
-     *
-     * @return the enemy fleet.
-     */
+	/**
+	 * Returns the enemy fleet.
+	 *
+	 * @return the enemy fleet.
+	 */
 	@Override
 	public IFleet getAlienFleet()
 	{
 		return myFleet;
 	}
 
-    /**
-     * Returns the list of moves made by the player.
-     *
-     * @return list of player moves.
-     */
+	/**
+	 * Returns the list of moves made by the player.
+	 *
+	 * @return list of player moves.
+	 */
 	@Override
 	public List<IMove> getMyMoves()
 	{
@@ -313,10 +313,10 @@ public class Game implements IGame
 	public String randomEnemyFire() {
 		List<IPosition> candidateShots = generateCandidateShots();
 		List<IPosition> shots = selectRandomShots(candidateShots);
-		
+
 		printSelectedShots(shots);
 		this.fireShots(shots);
-		
+
 		return Game.jsonShots(shots);
 	}
 
@@ -379,24 +379,24 @@ public class Game implements IGame
 	private List<IPosition> selectRandomShots(List<IPosition> candidateShots) {
 		Random random = new Random(System.currentTimeMillis());
 		List<IPosition> shots = new ArrayList<>();
-		
+
 		if (candidateShots.isEmpty())
 			return shots;
-		
+
 		IPosition newShot = null;
 		int targetSize = Math.min(candidateShots.size(), Game.NUMBER_SHOTS);
-		
+
 		// Fill with unique random positions
 		while (shots.size() < targetSize) {
 			newShot = candidateShots.get(random.nextInt(candidateShots.size()));
 			if (!shots.contains(newShot))
 				shots.add(newShot);
 		}
-		
+
 		// If we need more shots, repeat the last position
 		while (shots.size() < Game.NUMBER_SHOTS)
 			shots.add(newShot);
-		
+
 		return shots;
 	}
 
@@ -407,7 +407,7 @@ public class Game implements IGame
 	 */
 	private void printSelectedShots(List<IPosition> shots) {
 		System.out.println();
-        System.out.println(MessageManager.get("game.burst"));
+		System.out.println(MessageManager.get("game.burst"));
 		for (IPosition shot : shots)
 			System.out.print(shot + " ");
 		System.out.println();
@@ -516,8 +516,8 @@ public class Game implements IGame
 		Duration accumulated = gameTimer.getDuration();
 		Duration turnDuration = accumulated.minus(previousAccumulated);
 		previousAccumulated = accumulated;
-        System.out.println(MessageManager.get("game.turnDuration", GameTimer.formatDuration(turnDuration)));
-        System.out.println(MessageManager.get("game.accumulatedDuration", GameTimer.formatDuration(accumulated)));
+		System.out.println(MessageManager.get("game.turnDuration", GameTimer.formatDuration(turnDuration)));
+		System.out.println(MessageManager.get("game.accumulatedDuration", GameTimer.formatDuration(accumulated)));
 	}
 
 	/**
@@ -593,11 +593,11 @@ public class Game implements IGame
 	private ShotResult handleHit(IShip ship, IPosition pos) {
 		ship.shoot(pos);
 		countHits++;
-		
+
 		boolean isSunk = !ship.stillFloating();
 		if (isSunk)
 			countSinks++;
-		
+
 		return new ShotResult(true, false, ship, isSunk);
 	}
 
@@ -632,12 +632,12 @@ public class Game implements IGame
 		return floatingShips.size();
 	}
 
-    /**
-     * Checks if a given position has already been shot by the enemy.
-     *
-     * @param pos position to check.
-     * @return true if the position has already been shot, false otherwise.
-     */
+	/**
+	 * Checks if a given position has already been shot by the enemy.
+	 *
+	 * @param pos position to check.
+	 * @return true if the position has already been shot, false otherwise.
+	 */
 	public boolean repeatedShot(IPosition pos)
 	{
 		assert pos != null;
@@ -648,45 +648,45 @@ public class Game implements IGame
 		return false;
 	}
 
-    /**
-     * Prints the player's board to the console.
-     *
-     * @param show_shots  whether to show shots.
-     * @param show_legend whether to show the legend.
-     */
+	/**
+	 * Prints the player's board to the console.
+	 *
+	 * @param show_shots  whether to show shots.
+	 * @param show_legend whether to show the legend.
+	 */
 	public void printMyBoard(boolean show_shots, boolean show_legend)
 	{
 		Game.printBoard(this.myFleet, this.alienMoves, show_shots, show_legend);
 	}
 
-    /**
-     * Prints the enemy's board to the console.
-     *
-     * @param show_shots  whether to show shots.
-     * @param show_legend whether to show the legend.
-     */
+	/**
+	 * Prints the enemy's board to the console.
+	 *
+	 * @param show_shots  whether to show shots.
+	 * @param show_legend whether to show the legend.
+	 */
 	public void printAlienBoard(boolean show_shots, boolean show_legend)
 	{
 		Game.printBoard(this.alienFleet, this.myMoves, show_shots, show_legend);
 	}
 
-    /**
-     * Finalizes the game, prints a closing message and displays the total duration
-     * of the match.
-     *
-     * <p>
-     * This method stops the {@link GameTimer}, retrieves the total elapsed time
-     * since the beginning of the game, and prints it in a human-readable format.
-     * </p>
-     *
-     * <p>
-     * After displaying the final information, this method also generates a PDF
-     * report of the match using {@link GameReportPDF}. The report includes relevant
-     * game data and the total duration, allowing the user to keep a permanent
-     * record of the session.
-     * </p>
-     */
-    public void over() {
+	/**
+	 * Finalizes the game, prints a closing message and displays the total duration
+	 * of the match.
+	 *
+	 * <p>
+	 * This method stops the {@link GameTimer}, retrieves the total elapsed time
+	 * since the beginning of the game, and prints it in a human-readable format.
+	 * </p>
+	 *
+	 * <p>
+	 * After displaying the final information, this method also generates a PDF
+	 * report of the match using {@link GameReportPDF}. The report includes relevant
+	 * game data and the total duration, allowing the user to keep a permanent
+	 * record of the session.
+	 * </p>
+	 */
+	public void over() {
 		System.out.println();
 		System.out.println("+--------------------------------------------------------------+");
 		System.out.println("| " + MessageManager.get("game.over") + " |");
@@ -694,7 +694,7 @@ public class Game implements IGame
 
 		gameTimer.end();
 		String totalDuration = GameTimer.formatDuration(gameTimer.getDuration());
-        System.out.println(MessageManager.get("game.totalDuration", totalDuration));
+		System.out.println(MessageManager.get("game.totalDuration", totalDuration));
 
 		GameReportPDF.generate(this, totalDuration);
 	}
