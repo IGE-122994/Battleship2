@@ -235,35 +235,127 @@ public class Tasks {
 	 * @return The classic position that has been read
 	 */
 	public static IPosition readClassicPosition(@NotNull Scanner in) {
-		// Verifica se ainda há tokens disponíveis
+		validateScannerHasInput(in);
+		
+		String part1 = in.next(); // Primeiro token
+		String part2 = readOptionalSecondToken(in);
+		
+		String input = combineInputTokens(part1, part2);
+		input = normalizeInput(input);
+		
+		return parsePositionFromInput(input, part1, part2);
+	}
+
+	/**
+	 * Validates that the scanner has input available.
+	 *
+	 * @param in the scanner to validate
+	 * @throws IllegalArgumentException if no input is available
+	 */
+	private static void validateScannerHasInput(@NotNull Scanner in) {
 		if (!in.hasNext()) {
 			throw new IllegalArgumentException(MessageManager.get("error.noValidPosition"));
 		}
-
-		String part1 = in.next(); // Primeiro token
-		String part2 = null;
-
-		if (in.hasNextInt()) {
-			part2 = in.next(); // Segundo token, se disponível
-		}
-
-		String input = (part2 != null) ? part1 + part2 : part1;
-
-		// Normalizar o input para tratar letras maiúsculas e minúsculas
-		input = input.toUpperCase();
-
-		// Verificar os dois formatos possíveis: compactos e com espaço
-		if (input.matches("[A-Z]\\d+")) {
-			char column = input.charAt(0); // Extrair a coluna
-			int row = Integer.parseInt(input.substring(1)); // Extrair a linha
-			return new Position(column, row);
-		} else if (part2 != null && part1.matches("[A-Z]") && part2.matches("\\d+")) {
-			char column = part1.charAt(0); // Extrair a coluna
-			int row = Integer.parseInt(part2); // Extrair a linha
-			return new Position(column, row);
-		} else {
-			throw new IllegalArgumentException(MessageManager.get("error.invalidFormat"));
-		}
 	}
 
+	/**
+	 * Reads the optional second token if it's an integer.
+	 *
+	 * @param in the scanner to read from
+	 * @return the second token as a string, or null if not available
+	 */
+	private static String readOptionalSecondToken(@NotNull Scanner in) {
+		if (in.hasNextInt()) {
+			return in.next(); // Segundo token, se disponível
+		}
+		return null;
+	}
+
+	/**
+	 * Combines the input tokens into a single string.
+	 *
+	 * @param part1 the first token
+	 * @param part2 the second token (may be null)
+	 * @return the combined input string
+	 */
+	private static String combineInputTokens(String part1, String part2) {
+		return (part2 != null) ? part1 + part2 : part1;
+	}
+
+	/**
+	 * Normalizes the input to uppercase for consistent processing.
+	 *
+	 * @param input the input string to normalize
+	 * @return the normalized input string
+	 */
+	private static String normalizeInput(String input) {
+		return input.toUpperCase();
+	}
+
+	/**
+	 * Parses the position from the input tokens, trying different formats.
+	 *
+	 * @param input the combined and normalized input
+	 * @param part1 the first token
+	 * @param part2 the second token (may be null)
+	 * @return the parsed position
+	 * @throws IllegalArgumentException if the input format is invalid
+	 */
+	private static IPosition parsePositionFromInput(String input, String part1, String part2) {
+		if (isCompactFormat(input)) {
+			return parseCompactFormat(input);
+		}
+		
+		if (isSeparatedFormat(part1, part2)) {
+			return parseSeparatedFormat(part1, part2);
+		}
+		
+		throw new IllegalArgumentException(MessageManager.get("error.invalidFormat"));
+	}
+
+	/**
+	 * Checks if the input is in compact format (e.g., "A1").
+	 *
+	 * @param input the input string to check
+	 * @return true if the input matches compact format
+	 */
+	private static boolean isCompactFormat(String input) {
+		return input.matches("[A-Z]\\d+");
+	}
+
+	/**
+	 * Checks if the input is in separated format (e.g., "A" "1").
+	 *
+	 * @param part1 the first token
+	 * @param part2 the second token
+	 * @return true if the tokens match separated format
+	 */
+	private static boolean isSeparatedFormat(String part1, String part2) {
+		return part2 != null && part1.matches("[A-Z]") && part2.matches("\\d+");
+	}
+
+	/**
+	 * Parses a position from compact format (e.g., "A1").
+	 *
+	 * @param input the compact format input
+	 * @return the parsed position
+	 */
+	private static IPosition parseCompactFormat(String input) {
+		char column = input.charAt(0); // Extrair a coluna
+		int row = Integer.parseInt(input.substring(1)); // Extrair a linha
+		return new Position(column, row);
+	}
+
+	/**
+	 * Parses a position from separated format (e.g., "A" "1").
+	 *
+	 * @param part1 the column token
+	 * @param part2 the row token
+	 * @return the parsed position
+	 */
+	private static IPosition parseSeparatedFormat(String part1, String part2) {
+		char column = part1.charAt(0); // Extrair a coluna
+		int row = Integer.parseInt(part2); // Extrair a linha
+		return new Position(column, row);
+	}
 }
