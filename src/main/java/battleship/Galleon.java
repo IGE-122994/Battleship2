@@ -58,12 +58,16 @@ public class Galleon extends Ship {
 		for (int i = 0; i < 2; i++) {
 			getPositions().add(new Position(pos.getRow() + i, pos.getColumn()));
 		}
-		for (int j = 2; j < 5; j++) {
-			getPositions().add(new Position(pos.getRow() + 2, pos.getColumn() + j - 3));
-		}
-	}
+        fillSouthHorizontal(pos);
+    }
 
-	/**
+    private void fillSouthHorizontal(IPosition pos) {
+        for (int j = 2; j < 5; j++) {
+            getPositions().add(new Position(pos.getRow() + 2, pos.getColumn() + j - 3));
+        }
+    }
+
+    /**
 	 * Fills the positions of the Galleon when oriented to the EAST.
 	 *
 	 * @param pos The initial position of the ship.

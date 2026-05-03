@@ -407,7 +407,8 @@ public class Game implements IGame
 
 		assert pos != null;
 
-		if (!pos.isInside()) {
+        boolean outside = !pos.isInside();
+		if (outside) {
 			countInvalidShots++;
 			return new ShotResult(false, false, null, false);
 		}
@@ -424,10 +425,11 @@ public class Game implements IGame
 		{
 			ship.shoot(pos);
 			countHits++;
-			if (!ship.stillFloating()) {
+            boolean notFloating = !ship.stillFloating();
+			if (notFloating) {
 				countSinks++;
 			}
-			return new ShotResult(true, false, ship, !ship.stillFloating());
+			return new ShotResult(true, false, ship, notFloating);
 		}
 	}
 
