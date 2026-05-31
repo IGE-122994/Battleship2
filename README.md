@@ -200,13 +200,31 @@ Quando o relatório de uma rajada confirmar que um navio foi afundado, analise o
 ## Declaração de fim de jogo
 Se a sua frota for toda afundada, declare a derrota com honra. Em contrapartida, seja um vencedor magnânimo se for o inimigo a render-se com os navios todos no fundo do oceano!
 
+---
 
-# Links para os vídeos do YouTube
-https://youtu.be/4-C8CIBvnPE
-https://youtu.be/VkcgKGBzlhs
+# I. Operação na Nuvem e Simulação Socio-Técnica [OPCIONAL]
 
-# Link imagem no DockerHub
-https://hub.docker.com/r/ige110323/battleship-game
+## Problema encontrado
+Obtivemos problemas na execução dos testes desta tarefa, visto que o URL que obtivemos do `render.com` - o serviço `SnapDeploy` não funcionou - ficava em _loading_ durante muito tempo e depois a página fazia _refresh_ automático. Abaixo está um vídeo de demonstração.
+
+https://github.com/user-attachments/assets/f8b4c2fc-8ee6-43d5-b7e4-b2924b29af7e
+
+---
+
+# 🔗 Links do Projeto
+Abaixo encontram-se os links associados ao projeto.
+
+## Links para os vídeos do YouTube
+- https://youtu.be/4-C8CIBvnPE 
+- https://youtu.be/VkcgKGBzlhs
+
+## Link para a imagem no DockerHub
+- https://hub.docker.com/r/ige110323/battleship-game
+
+## URL da tarefa I. [OPCIONAL]
+- https://battleship-game-2.onrender.com/
+
+---
 
 ## CI/CD Workflows
 
