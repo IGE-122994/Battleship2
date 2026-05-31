@@ -1,0 +1,26 @@
+{
+  "name": "Battleship Game Dev Environment",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "vscjava.vscode-java-pack",
+        "ms-azuretools.vscode-docker",
+        "github.vscode-github-actions",
+        "yzhang.markdown-all-in-one"
+      ]
+    },
+    "jetbrains": {
+      "plugins": [
+        "Docker",
+        "github-actions-manager",
+        "org.intellij.plugins.markdown"
+      ]
+    }
+  },
+  "forwardPorts": [],
+  "postCreateCommand": "mvn clean compile",
+  "remoteUser": "root"
+}
