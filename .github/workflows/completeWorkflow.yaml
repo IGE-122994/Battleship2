@@ -35,6 +35,9 @@ jobs:
       - name: Executar testes unitários
         run: mvn test
 
+      - name: Gerar JAR
+        run: mvn package -DskipTests
+
       - name: Validar qualidade no SonarQube Cloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
