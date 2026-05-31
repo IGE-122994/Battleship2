@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battleship 2.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0a0e1a;
+    --deep: #0d1628;
+    --ocean: #0f2044;
+    --wave: #1a3a6e;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --rust: #8b3a2a;
+    --fog: #a8b8d0;
+    --white: #f0f4f8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Crimson Text', Georgia, serif;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* Animated ocean background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(26,58,110,0.4) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(15,32,68,0.6) 0%, transparent 50%),
+      radial-gradient(ellipse at 60% 80%, rgba(10,14,26,0.8) 0%, transparent 40%);
+    z-index: 0;
+    animation: oceanShift 12s ease-in-out infinite alternate;
+  }
+
+  @keyframes oceanShift {
+    0% { opacity: 0.8; transform: scale(1); }
+    100% { opacity: 1; transform: scale(1.05); }
+  }
+
+  /* Grid overlay */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .container { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; padding: 0 2rem; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 4rem 2rem;
+    position: relative;
+  }
+
+  .anchor {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bob 3s ease-in-out infinite;
+    display: block;
+    filter: drop-shadow(0 0 20px rgba(201,168,76,0.5));
+  }
+
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-5deg); }
+    50% { transform: translateY(-12px) rotate(5deg); }
+  }
+
+  .hero-subtitle {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.2s;
+  }
+
+  .hero-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(3rem, 10vw, 7rem);
+    font-weight: 900;
+    line-height: 0.9;
+    color: var(--white);
+    text-shadow: 0 0 60px rgba(201,168,76,0.3), 0 4px 20px rgba(0,0,0,0.8);
+    margin-bottom: 0.2em;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.4s;
+  }
+
+  .hero-title span { color: var(--gold); }
+
+  .hero-version {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.5rem, 4vw, 3rem);
+    color: var(--fog);
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.6s;
+  }
+
+  .hero-desc {
+    font-size: 1.2rem;
+    font-style: italic;
+    color: var(--fog);
+    max-width: 540px;
+    line-height: 1.7;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 0.8s;
+  }
+
+  .badges {
+    display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center;
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 1s;
+  }
+
+  .badge {
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-light);
+    padding: 0.3rem 0.9rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    border-radius: 2px;
+  }
+
+  .cta-group {
+    display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    opacity: 0;
+    animation: fadeUp 0.8s ease forwards 1.2s;
+  }
+
+  .btn-primary {
+    background: var(--gold);
+    color: var(--navy);
+    padding: 0.8rem 2rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--gold);
+    padding: 0.8rem 2rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border: 1px solid rgba(201,168,76,0.5);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* DIVIDER */
+  .divider {
+    display: flex; align-items: center; gap: 1.5rem;
+    padding: 4rem 0 2rem;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,168,76,0.4), transparent);
+  }
+  .divider-icon { color: var(--gold); font-size: 1.2rem; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-heading {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    margin-bottom: 2.5rem;
+    color: var(--white);
+  }
+
+  /* FEATURES TABLE */
+  .feature-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 4rem;
+  }
+
+  .feature-table th {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding: 0.8rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid rgba(201,168,76,0.3);
+  }
+
+  .feature-table td {
+    padding: 0.9rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 1rem;
+    color: var(--fog);
+    vertical-align: middle;
+  }
+
+  .feature-table tr:hover td { background: rgba(201,168,76,0.04); }
+  .feature-table td:first-child { color: var(--white); font-weight: 600; }
+
+  .status { font-size: 1.1rem; }
+
+  /* STACK */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    background: rgba(201,168,76,0.15);
+    border: 1px solid rgba(201,168,76,0.15);
+    margin-bottom: 4rem;
+  }
+
+  .stack-item {
+    background: var(--deep);
+    padding: 1.5rem;
+    transition: background 0.2s;
+  }
+
+  .stack-item:hover { background: var(--ocean); }
+
+  .stack-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .stack-value {
+    font-size: 1.1rem;
+    color: var(--white);
+  }
+
+  /* SETUP */
+  .setup-steps { margin-bottom: 4rem; }
+
+  .step {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.2rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    align-items: flex-start;
+  }
+
+  .step-num {
+    font-family: 'Cinzel', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: rgba(201,168,76,0.3);
+    min-width: 2rem;
+    line-height: 1;
+    margin-top: 0.2rem;
+  }
+
+  .step-content { flex: 1; }
+  .step-title { font-family: 'Cinzel', serif; font-size: 0.9rem; color: var(--white); margin-bottom: 0.4rem; }
+
+  .code-block {
+    background: rgba(0,0,0,0.4);
+    border-left: 2px solid var(--gold);
+    padding: 0.6rem 1rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.85rem;
+    color: var(--gold-light);
+    margin-top: 0.5rem;
+    overflow-x: auto;
+  }
+
+  /* ROADMAP */
+  .roadmap { margin-bottom: 4rem; }
+
+  .roadmap-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+
+  .roadmap-check { font-size: 1rem; min-width: 1.5rem; }
+  .roadmap-text { font-size: 1rem; color: var(--fog); }
+  .roadmap-text.done { color: var(--white); text-decoration: line-through; text-decoration-color: rgba(201,168,76,0.4); }
+
+  /* CI/CD */
+  .workflow-card {
+    background: rgba(201,168,76,0.05);
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 1.5rem;
+    margin-bottom: 4rem;
+  }
+
+  .workflow-title {
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: var(--gold);
+    margin-bottom: 0.5rem;
+  }
+
+  .workflow-desc { color: var(--fog); font-size: 1rem; margin-bottom: 1rem; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid rgba(201,168,76,0.2);
+    padding: 3rem 0;
+    text-align: center;
+  }
+
+  .footer-anchor { font-size: 2rem; display: block; margin-bottom: 1rem; opacity: 0.4; }
+
+  .footer-text {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.3em;
+    color: var(--fog);
+    text-transform: uppercase;
+  }
+
+  .footer-text a { color: var(--gold); text-decoration: none; }
+  .footer-text a:hover { text-decoration: underline; }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <span class="anchor">⚓</span>
+  <p class="hero-subtitle">ISCTE-IUL · Software Engineering</p>
+  <h1 class="hero-title">BATTLE<span>SHIP</span></h1>
+  <p class="hero-version">2.0</p>
+  <p class="hero-desc">A modern take on the classic naval warfare game, designed for the XVII century setting with updated software engineering patterns.</p>
+  <div class="badges">
+    <span class="badge">Build Passing</span>
+    <span class="badge">Java 21</span>
+    <span class="badge">MIT License</span>
+    <span class="badge">Maven</span>
+  </div>
+  <div class="cta-group">
+    <a href="https://github.com/IGE-122994/Battleship2" class="btn-primary">View on GitHub</a>
+    <a href="apidocs/index.html" class="btn-secondary">API Docs</a>
+  </div>
+</section>
+
+<div class="container">
+
+  <!-- FEATURES -->
+  <div class="divider reveal"><span class="divider-icon">✦</span></div>
+  <p class="section-title reveal">Arsenal</p>
+  <h2 class="section-heading reveal">Key Features</h2>
+
+  <table class="feature-table reveal">
+    <thead>
+      <tr>
+        <th>Feature</th>
+        <th>Description</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Grid System</td><td>Flexible N×N board generation</td><td class="status">✅</td></tr>
+      <tr><td>Ship Varieties</td><td>Galleons, Frigates, and Brigantines — XVII Century theme</td><td class="status">✅</td></tr>
+      <tr><td>AI Opponent</td><td>Heuristic-based targeting system</td><td class="status">🚧</td></tr>
+      <tr><td>Network Play</td><td>Socket-based multiplayer</td><td class="status">❌</td></tr>
+    </tbody>
+  </table>
+
+  <!-- STACK -->
+  <div class="divider reveal"><span class="divider-icon">✦</span></div>
+  <p class="section-title reveal">Armaments</p>
+  <h2 class="section-heading reveal">Technical Stack</h2>
+
+  <div class="stack-grid reveal">
+    <div class="stack-item"><p class="stack-label">Language</p><p class="stack-value">Java 21</p></div>
+    <div class="stack-item"><p class="stack-label">Build Tool</p><p class="stack-value">Maven</p></div>
+    <div class="stack-item"><p class="stack-label">Testing</p><p class="stack-value">JUnit 5</p></div>
+    <div class="stack-item"><p class="stack-label">Logging</p><p class="stack-value">Log4j2</p></div>
+    <div class="stack-item"><p class="stack-label">Quality</p><p class="stack-value">SonarQube</p></div>
+    <div class="stack-item"><p class="stack-label">Containers</p><p class="stack-value">Docker</p></div>
+  </div>
+
+  <!-- SETUP -->
+  <div class="divider reveal"><span class="divider-icon">✦</span></div>
+  <p class="section-title reveal">All Hands on Deck</p>
+  <h2 class="section-heading reveal">Installation & Setup</h2>
+
+  <div class="setup-steps reveal">
+    <div class="step">
+      <span class="step-num">1</span>
+      <div class="step-content">
+        <p class="step-title">Clone the repository</p>
+        <div class="code-block">git clone https://github.com/IGE-122994/Battleship2.git</div>
+      </div>
+    </div>
+    <div class="step">
+      <span class="step-num">2</span>
+      <div class="step-content">
+        <p class="step-title">Navigate to directory</p>
+        <div class="code-block">cd Battleship2</div>
+      </div>
+    </div>
+    <div class="step">
+      <span class="step-num">3</span>
+      <div class="step-content">
+        <p class="step-title">Compile and run tests</p>
+        <div class="code-block">mvn clean compile && mvn test</div>
+      </div>
+    </div>
+    <div class="step">
+      <span class="step-num">4</span>
+      <div class="step-content">
+        <p class="step-title">Run with Docker</p>
+        <div class="code-block">docker run --name battleship -it ige110323/battleship-game</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="divider reveal"><span class="divider-icon">✦</span></div>
+  <p class="section-title reveal">Charting the Course</p>
+  <h2 class="section-heading reveal">Roadmap</h2>
+
+  <div class="roadmap reveal">
+    <div class="roadmap-item"><span class="roadmap-check">✅</span><span class="roadmap-text done">Basic grid implementation</span></div>
+    <div class="roadmap-item"><span class="roadmap-check">✅</span><span class="roadmap-text done">Ship placement validation</span></div>
+    <div class="roadmap-item"><span class="roadmap-check">⬜</span><span class="roadmap-text">Add sound effects (SFX)</span></div>
+    <div class="roadmap-item"><span class="roadmap-check">⬜</span><span class="roadmap-text">Implement "Fog of War" mechanic</span></div>
+    <div class="roadmap-item"><span class="roadmap-check">⬜</span><span class="roadmap-text">Multiplayer Integration (High Priority)</span></div>
+  </div>
+
+  <!-- CI/CD -->
+  <div class="divider reveal"><span class="divider-icon">✦</span></div>
+  <p class="section-title reveal">Operations</p>
+  <h2 class="section-heading reveal">CI/CD Workflow</h2>
+
+  <div class="workflow-card reveal">
+    <p class="workflow-title">⚙ Java with Maven</p>
+    <p class="workflow-desc">Executes unit tests automatically on every push or pull request to the main branch.</p>
+    <a href="https://github.com/IGE-122994/Battleship2/actions/workflows/javawithmaven.yml" class="btn-secondary">View Workflow</a>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <span class="footer-anchor">⚓</span>
+    <p class="footer-text">
+      Maintained by <a href="https://github.com/britoeabreu">@britoeabreu</a> &nbsp;·&nbsp;
+      Created for Software Engineering students at ISCTE-IUL
+    </p>
+  </div>
+</footer>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
