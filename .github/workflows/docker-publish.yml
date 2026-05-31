@@ -30,4 +30,4 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name == 'push' }}
-          tags: battleship-game:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/battleship-game:latest
