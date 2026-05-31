@@ -205,6 +205,9 @@ Se a sua frota for toda afundada, declare a derrota com honra. Em contrapartida,
 https://youtu.be/4-C8CIBvnPE
 https://youtu.be/VkcgKGBzlhs
 
+# Link imagem no DockerHub
+https://hub.docker.com/r/ige110323/battleship-game
+
 ## CI/CD Workflows
 
 ### Java with Maven
