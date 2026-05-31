@@ -344,14 +344,12 @@
 <section class="hero">
   <span class="anchor">⚓</span>
   <p class="hero-label">ISCTE-IUL · Software Engineering · 2025/2026</p>
-  <h1 class="hero-title">BATTLE<span>SHIP</span></h1>
-  <p class="hero-version">2.0</p>
+  <h1 class="hero-title">BATTLE<span>SHIP</span> 2.0</h1>
   <p class="hero-desc">A modern take on the classic naval warfare game, designed for the XVII century setting with updated software engineering patterns.</p>
   <div class="badges">
     <span class="badge">✅ Build Passing</span>
-    <span class="badge">☕ Java 21</span>
+    <span class="badge">☕ Java 17+</span>
     <span class="badge">📄 MIT License</span>
-    <span class="badge">🐳 Docker</span>
   </div>
   <div class="cta-group">
     <a href="https://github.com/IGE-122994/Battleship2" class="btn-primary">View on GitHub</a>
@@ -367,10 +365,18 @@
     <p class="section-label">Mission Briefing</p>
     <h2 class="section-heading">Project Overview</h2>
     <p class="overview-text">This project serves as a template and reference for students learning <strong>Object-Oriented Programming (OOP)</strong> and <strong>Software Quality</strong>. It simulates a battleship environment where players must strategically place ships and sink the enemy fleet.</p>
-    <div class="quote-block">
-      A modern take on the classic naval warfare game, designed for the XVII century setting with updated software engineering patterns.
+  </div>
+
+  <!-- RULES -->
+  <div class="divider reveal"><span class="divider-icon">✦</span></div>
+  <div class="section reveal">
+    <p class="section-label">Rules of Engagement</p>
+    <h2 class="section-heading">The Rules</h2>
+    <p class="overview-text">The game is played on a grid (typically 10×10). The coordinate system is defined as:</p>
+    <div class="quote-block" style="font-style:normal; font-family:'Courier New', monospace; font-size:1rem; letter-spacing:0.05em;">
+      (x, y) ∈ {0, …, 9} × {0, …, 9}
     </div>
-    <p class="overview-text">The game is played on a 10×10 grid. Hits are calculated based on the intersection of the shot vector and the ship's bounding box.</p>
+    <p class="overview-text">Hits are calculated based on the intersection of the shot vector and the ship's bounding box.</p>
   </div>
 
   <!-- FEATURES -->
@@ -397,12 +403,10 @@
     <p class="section-label">Armaments</p>
     <h2 class="section-heading">Technical Stack</h2>
     <div class="stack-grid">
-      <div class="stack-item"><p class="stack-label">Language</p><p class="stack-value">Java 21</p></div>
-      <div class="stack-item"><p class="stack-label">Build Tool</p><p class="stack-value">Maven</p></div>
+      <div class="stack-item"><p class="stack-label">Language</p><p class="stack-value">Java 17</p></div>
+      <div class="stack-item"><p class="stack-label">Build Tool</p><p class="stack-value">Maven / Gradle</p></div>
       <div class="stack-item"><p class="stack-label">Testing</p><p class="stack-value">JUnit 5</p></div>
       <div class="stack-item"><p class="stack-label">Logging</p><p class="stack-value">Log4j2</p></div>
-      <div class="stack-item"><p class="stack-label">Quality</p><p class="stack-value">SonarQube</p></div>
-      <div class="stack-item"><p class="stack-label">Containers</p><p class="stack-value">Docker</p></div>
     </div>
   </div>
 
@@ -411,6 +415,14 @@
   <div class="section reveal">
     <p class="section-label">All Hands on Deck</p>
     <h2 class="section-heading">Installation & Setup</h2>
+    <div class="step">
+      <span class="step-num">0</span>
+      <div>
+        <p class="step-title">Prerequisites</p>
+        <div class="code-block">JDK 17 or higher</div>
+        <div class="code-block">Git</div>
+      </div>
+    </div>
     <div class="step">
       <span class="step-num">1</span>
       <div>
@@ -428,23 +440,118 @@
     <div class="step">
       <span class="step-num">3</span>
       <div>
-        <p class="step-title">Compile the project</p>
-        <div class="code-block">mvn clean compile</div>
+        <p class="step-title">Compile and Run</p>
+        <div class="code-block">javac Main.java &amp;&amp; java Main</div>
       </div>
     </div>
-    <div class="step">
-      <span class="step-num">4</span>
-      <div>
-        <p class="step-title">Run unit tests</p>
-        <div class="code-block">mvn test</div>
-      </div>
-    </div>
-    <div class="step">
-      <span class="step-num">5</span>
-      <div>
-        <p class="step-title">Run with Docker</p>
-        <div class="code-block">docker run --name battleship -it ige110323/battleship-game</div>
-      </div>
+  </div>
+
+  <!-- DOCUMENTATION -->
+  <div class="divider reveal"><span class="divider-icon">✦</span></div>
+  <div class="section reveal">
+    <p class="section-label">Charts &amp; Logs</p>
+    <h2 class="section-heading">Documentation</h2>
+    <p class="overview-text">You can access the generated Javadoc here:</p>
+    <p style="margin-bottom:1.5rem;"><a href="https://ige-122994.github.io/Battleship2/" class="btn-secondary" target="_blank">👉 Battleship2 API Documentation</a></p>
+
+    <div class="divider reveal"><span class="divider-icon">✦</span></div>
+
+    <h3 style="font-family:'Cinzel',serif; font-size:1rem; color:var(--gold); letter-spacing:0.15em; margin-bottom:1rem; text-transform:uppercase;">Core Logic</h3>
+    <div class="code-block" style="white-space:pre;">public class Ship {
+    private String name;
+    private int size;
+    private boolean isSunk;
+
+    // TODO: Implement damage logic
+    public void hit() {
+        // Implementation here
+    }
+}</div>
+
+    <div class="divider reveal"><span class="divider-icon">✦</span></div>
+
+    <h3 style="font-family:'Cinzel',serif; font-size:1rem; color:var(--gold); letter-spacing:0.15em; margin:1.5rem 0 0.8rem; text-transform:uppercase;">Design Patterns Used</h3>
+    <ul style="list-style:none; padding:0;">
+      <li style="padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.05); color:var(--fog); font-size:1rem;">
+        <strong style="color:var(--white);">Strategy Pattern:</strong> For different AI difficulty levels.
+      </li>
+      <li style="padding:0.5rem 0; border-bottom:1px solid rgba(255,255,255,0.05); color:var(--fog); font-size:1rem;">
+        <strong style="color:var(--white);">Observer Pattern:</strong> To update the UI when a ship is hit.
+      </li>
+    </ul>
+  </div>
+
+  <!-- LOGIC FLOW -->
+  <div class="divider reveal"><span class="divider-icon">✦</span></div>
+  <div class="section reveal">
+    <p class="section-label">How To Play Your Cards</p>
+    <h2 class="section-heading">Logic Flow</h2>
+    <div style="background:rgba(0,0,0,0.3); border:1px solid rgba(201,168,76,0.2); padding:1.5rem; overflow-x:auto;">
+      <svg viewBox="0 0 680 680" xmlns="http://www.w3.org/2000/svg" style="width:100%; max-width:600px; display:block; margin:0 auto;">
+        <defs>
+          <marker id="lf-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+
+        <!-- A: Start Game -->
+        <rect x="240" y="20" width="200" height="44" rx="22" fill="rgba(201,168,76,0.12)" stroke="rgba(201,168,76,0.5)" stroke-width="1"/>
+        <text x="340" y="42" text-anchor="middle" dominant-baseline="central" fill="#e8c97a" font-family="'Cinzel',serif" font-size="13" letter-spacing="1">Start Game</text>
+
+        <!-- A → B -->
+        <line x1="340" y1="64" x2="340" y2="104" stroke="rgba(201,168,76,0.6)" stroke-width="1.5" marker-end="url(#lf-arrow)"/>
+
+        <!-- B: Place Ships (diamond) -->
+        <polygon points="340,108 430,152 340,196 250,152" fill="rgba(26,58,110,0.5)" stroke="rgba(201,168,76,0.5)" stroke-width="1"/>
+        <text x="340" y="148" text-anchor="middle" dominant-baseline="central" fill="#e8c97a" font-family="'Cinzel',serif" font-size="12">Place</text>
+        <text x="340" y="164" text-anchor="middle" dominant-baseline="central" fill="#e8c97a" font-family="'Cinzel',serif" font-size="12">Ships</text>
+
+        <!-- B → C -->
+        <line x1="340" y1="196" x2="340" y2="236" stroke="rgba(201,168,76,0.6)" stroke-width="1.5" marker-end="url(#lf-arrow)"/>
+
+        <!-- C: Player Turn -->
+        <rect x="240" y="240" width="200" height="44" rx="22" fill="rgba(201,168,76,0.12)" stroke="rgba(201,168,76,0.5)" stroke-width="1"/>
+        <text x="340" y="262" text-anchor="middle" dominant-baseline="central" fill="#e8c97a" font-family="'Cinzel',serif" font-size="13" letter-spacing="1">Player Turn</text>
+
+        <!-- C → D -->
+        <line x1="340" y1="284" x2="340" y2="324" stroke="rgba(201,168,76,0.6)" stroke-width="1.5" marker-end="url(#lf-arrow)"/>
+
+        <!-- D: Target Coordinate -->
+        <rect x="220" y="328" width="240" height="44" rx="22" fill="rgba(201,168,76,0.12)" stroke="rgba(201,168,76,0.5)" stroke-width="1"/>
+        <text x="340" y="350" text-anchor="middle" dominant-baseline="central" fill="#e8c97a" font-family="'Cinzel',serif" font-size="13" letter-spacing="1">Target Coordinate</text>
+
+        <!-- D → E -->
+        <line x1="340" y1="372" x2="340" y2="412" stroke="rgba(201,168,76,0.6)" stroke-width="1.5" marker-end="url(#lf-arrow)"/>
+
+        <!-- E: Hit or Miss? (diamond) -->
+        <polygon points="340,416 430,460 340,504 250,460" fill="rgba(26,58,110,0.5)" stroke="rgba(201,168,76,0.5)" stroke-width="1"/>
+        <text x="340" y="456" text-anchor="middle" dominant-baseline="central" fill="#e8c97a" font-family="'Cinzel',serif" font-size="12">Hit or</text>
+        <text x="340" y="472" text-anchor="middle" dominant-baseline="central" fill="#e8c97a" font-family="'Cinzel',serif" font-size="12">Miss?</text>
+
+        <!-- Hit → F (right) -->
+        <line x1="430" y1="460" x2="500" y2="460" stroke="rgba(201,168,76,0.6)" stroke-width="1.5" marker-end="url(#lf-arrow)"/>
+        <text x="462" y="451" text-anchor="middle" fill="#a8b8d0" font-family="'Cinzel',serif" font-size="11">Hit</text>
+
+        <!-- F: Check if Sunk -->
+        <rect x="500" y="438" width="150" height="44" rx="22" fill="rgba(201,168,76,0.12)" stroke="rgba(201,168,76,0.5)" stroke-width="1"/>
+        <text x="575" y="456" text-anchor="middle" dominant-baseline="central" fill="#e8c97a" font-family="'Cinzel',serif" font-size="12">Check if</text>
+        <text x="575" y="472" text-anchor="middle" dominant-baseline="central" fill="#e8c97a" font-family="'Cinzel',serif" font-size="12">Sunk</text>
+
+        <!-- Miss → down to AI Turn (straight down left side) -->
+        <path d="M250 460 L160 460 L160 590 L230 590" fill="none" stroke="rgba(201,168,76,0.6)" stroke-width="1.5" marker-end="url(#lf-arrow)"/>
+        <text x="207" y="451" text-anchor="middle" fill="#a8b8d0" font-family="'Cinzel',serif" font-size="11">Miss</text>
+
+        <!-- F → AI Turn (straight down right side) -->
+        <path d="M575 482 L575 590 L450 590" fill="none" stroke="rgba(201,168,76,0.6)" stroke-width="1.5" marker-end="url(#lf-arrow)"/>
+
+        <!-- G: AI Turn — centred -->
+        <rect x="230" y="568" width="220" height="44" rx="22" fill="rgba(201,168,76,0.12)" stroke="rgba(201,168,76,0.5)" stroke-width="1"/>
+        <text x="340" y="590" text-anchor="middle" dominant-baseline="central" fill="#e8c97a" font-family="'Cinzel',serif" font-size="13" letter-spacing="1">AI Turn</text>
+
+        <!-- G → C (straight up, offset left to avoid overlap) -->
+        <path d="M340 612 L340 640 L100 640 L100 262 L238 262" fill="none" stroke="rgba(201,168,76,0.6)" stroke-width="1.5" marker-end="url(#lf-arrow)"/>
+
+      </svg>
     </div>
   </div>
 
@@ -460,47 +567,15 @@
     <div class="roadmap-item"><span class="roadmap-check">⬜</span><span class="roadmap-text">Multiplayer Integration (High Priority)</span></div>
   </div>
 
-  <!-- CI/CD -->
+  <!-- TESTING -->
   <div class="divider reveal"><span class="divider-icon">✦</span></div>
   <div class="section reveal">
-    <p class="section-label">Operations</p>
-    <h2 class="section-heading">CI/CD Workflow</h2>
-    <div class="workflow-card">
-      <p class="workflow-title">⚙ Java with Maven</p>
-      <p class="workflow-desc">Executes unit tests automatically on every push or pull request to the main branch. Ensures code quality and stability throughout development.</p>
-      <a href="https://github.com/IGE-122994/Battleship2/actions/workflows/javawithmaven.yml" class="btn-secondary">View Workflow →</a>
-    </div>
-  </div>
-
-  <!-- NOTICES -->
-  <div class="divider reveal"><span class="divider-icon">✦</span></div>
-  <div class="section reveal">
-    <p class="section-label">Ship's Log</p>
-    <h2 class="section-heading">Notes & Known Issues</h2>
-    <div class="notice">
-      <p class="notice-title">⚠ Lab 3 — SonarQube Cloud</p>
-      <p class="notice-text">Due to the free tier of SonarQube Cloud, analysis is limited to the main branch only. Each team member captured screenshots of different severity levels: Blocker, High (Cognitive Complexity), and Info.</p>
-    </div>
-    <div class="notice">
-      <p class="notice-title">⚠ QODANA_TOKEN Issue</p>
-      <p class="notice-text">Version incompatibility prevented full Qodana configuration (<em>Unexpected keys: qualityGates, inspections</em>). The simplified qodana.yaml was retained as a result.</p>
-    </div>
-  </div>
-
-  <!-- VIDEOS -->
-  <div class="divider reveal"><span class="divider-icon">✦</span></div>
-  <div class="section reveal">
-    <p class="section-label">Dispatches</p>
-    <h2 class="section-heading">Video Demonstrations</h2>
-    <div class="video-grid">
-      <a href="https://youtu.be/4-C8CIBvnPE" class="video-link" target="_blank">
-        <span class="video-icon">▶</span>
-        <span>Video Demo 1</span>
-      </a>
-      <a href="https://youtu.be/VkcgKGBzlhs" class="video-link" target="_blank">
-        <span class="video-icon">▶</span>
-        <span>Video Demo 2</span>
-      </a>
+    <p class="section-label">Battle Drills</p>
+    <h2 class="section-heading">Testing</h2>
+    <p class="overview-text">We use high-coverage unit testing to ensure game stability. Run tests using:</p>
+    <div class="code-block">mvn test</div>
+    <div class="quote-block" style="margin-top:1.2rem;">
+      💡 <strong>Tip:</strong> Use the <code style="font-family:'Courier New',monospace; background:rgba(0,0,0,0.3); padding:0.1rem 0.4rem; color:var(--gold-light);">-Dtest=ClassName</code> flag to run specific test suites during development.
     </div>
   </div>
 
@@ -531,16 +606,101 @@
     </div>
   </div>
 
+  <!-- NOTICES -->
+  <div class="divider reveal"><span class="divider-icon">✦</span></div>
+  <div class="section reveal">
+    <p class="section-label">Ship's Log</p>
+    <h2 class="section-heading">Notes & Known Issues</h2>
+    <div class="notice">
+      <p class="notice-title">⚠ Lab 3 — SonarQube Cloud</p>
+      <p class="notice-text">Como estamos a utilizar a versão não paga (gratuita) do SonarQube Cloud, apenas nos é permitido analisar o branch <em>main</em>. Cada membro da equipa capturou screenshots de partes diferentes da análise: <strong>Issues → Blocker Severity</strong>, <strong>Issues → High Severity - Maintainability - Cognitive Complexity</strong>, <strong>Issues → Info Severity</strong>, e <strong>Issues → pull request 28 - erro intencional HuggingFaceClient.java</strong>.</p>
+    </div>
+    <div class="notice">
+      <p class="notice-title">⚠ QODANA_TOKEN Issue</p>
+      <p class="notice-text">Existiram problemas com o QODANA_TOKEN que impediram a realização do trabalho a tempo. Devido a estes impasses, ficou o ficheiro <em>qodana.yaml</em> simplificado, ao invés do mais completo que se perdeu entre tentativas de resolver os problemas, nomeadamente a incompatibilidade de versões — erro: <em>Unexpected keys in qodana.yaml: [qualityGates, inspections]</em>.</p>
+    </div>
+    <div class="notice" style="border-left-color: var(--gold); border-color: rgba(201,168,76,0.4); background: rgba(201,168,76,0.05);">
+      <p class="notice-title" style="color: var(--gold);">📝 Nota — Tarefa 1</p>
+      <p class="notice-text"><strong>Francisco Silva - 1110323:</strong> "Como eliminei a branch na qual fiz a feature do gamerportpdf no guião 2, no guião 3 vou realizar a tarefa 1 usando a branch da feature da integração de LLM que criei, calculando as métricas a partir do ultimo commit dessa branch."</p>
+    </div>
+  </div>
+
+  <!-- AI PROMPT -->
+  <div class="divider reveal"><span class="divider-icon">✦</span></div>
+  <div class="section reveal">
+    <p class="section-label">Ordem de Combate</p>
+    <h2 class="section-heading">Prompt para IA — Tática de Rajadas</h2>
+
+    <h3 style="font-family:'Cinzel',serif; font-size:0.9rem; color:var(--gold); letter-spacing:0.15em; margin:0 0 0.8rem; text-transform:uppercase;">Diário de Bordo</h3>
+    <p class="overview-text">Crie um Diário de Bordo com o registo de cada rajada disparada, numerando-as sequencialmente (Rajada 1, 2, 3...). Guarde as coordenadas exatas de cada rajada e o respetivo resultado (Água, Nau atingida, Barca afundada, etc.). A memória é a principal arma de um bom estratega. Guarde o Diário de Bordo desta forma:</p>
+    <div class="code-block" style="white-space:pre-wrap; margin:0.8rem 0;">{"rajada":1,"coordenadas":["A1","D6","G9"],"resultado":"3 Misses","observacoes":"","contadores": "Barcas a flutuar: 4; Caravelas a flutuar: 3; Naus a flutuar: 2; Fragatas a flutuar: 1; Galeões a flutuar: 1"}
+{"rajada":2,"coordenadas":["B6","E2","H4"],"resultado":"1 Hit (Nau); 2 Misses","observacoes":"usar Target Mode; testar ortogonais do hit","contadores": "Barcas a flutuar: 4; Caravelas a flutuar: 3; Naus a flutuar: 2; Fragatas a flutuar: 1; Galeões a flutuar: 1"}
+{"rajada":3,"coordenadas":["C2","F4","I6"],"resultado":"2 Hits (1 Nau; 1 Fragata); 1 Miss","observacoes":"confirmar posições dos hits; priorizar Target Mode para cada hit","contadores": "Barcas a flutuar: 4; Caravelas a flutuar: 3; Naus a flutuar: 2; Fragatas a flutuar: 1; Galeões a flutuar: 1"}</div>
+
+    <h3 style="font-family:'Cinzel',serif; font-size:0.9rem; color:var(--gold); letter-spacing:0.15em; margin:1.2rem 0 0.8rem; text-transform:uppercase;">Evitar Tiros Inválidos e Repetições</h3>
+    <p class="overview-text">Não dispare fora dos limites do mapa (ex: Z99) nem repita tiros em coordenadas já testadas — verifique o Diário de Bordo para conseguir evitar estes erros. A única exceção para este desperdício de pólvora é a última rajada do jogo, apenas para perfazer os 3 tiros obrigatórios quando a frota inimiga já estiver irremediavelmente no fundo do mar.</p>
+
+    <h3 style="font-family:'Cinzel',serif; font-size:0.9rem; color:var(--gold); letter-spacing:0.15em; margin:1.2rem 0 0.8rem; text-transform:uppercase;">Procedimento após Atingir Navios</h3>
+    <ul style="list-style:none; padding:0;">
+      <li style="padding:0.6rem 0; border-bottom:1px solid rgba(255,255,255,0.05); color:var(--fog); font-size:1rem;">
+        <strong style="color:var(--white);">Acertou apenas um tiro:</strong> Escolha uma coordenada da rajada e dispare nas posições contíguas (Norte, Sul, Este, Oeste) para descobrir a orientação da embarcação e acabar de a afundar.
+      </li>
+      <li style="padding:0.6rem 0; border-bottom:1px solid rgba(255,255,255,0.05); color:var(--fog); font-size:1rem;">
+        <strong style="color:var(--white);">Acertou mais do que um tiro:</strong> Escolha uma coordenada adjacente de cada uma das 3 coordenadas da rajada, de modo a explorar mais do que um ponto de contacto. Por exemplo: se acertou dois tiros na rajada A2-D4-J7, experimente A3-E4-I7 na rajada seguinte, explorando uma adjacência de todos os pontos anteriores.
+      </li>
+    </ul>
+
+    <h3 style="font-family:'Cinzel',serif; font-size:0.9rem; color:var(--gold); letter-spacing:0.15em; margin:1.2rem 0 0.8rem; text-transform:uppercase;">Regras após Afundamento</h3>
+    <p class="overview-text">Se uma rajada confirmar que um navio foi afundado, não dispare para as posições contíguas (ortogonais e diagonais) porque os navios nunca estão encostados nem diagonalmente — marque essas casas como água e reduza a contagem dessa embarcação no seu Diário de Bordo. Além disso, como Caravelas, Naus e Fragatas ocupam linhas retas, um tiro certeiro indica que o resto do navio está na horizontal ou na vertical, pelo que deve continuar a procurar nessa direção em vez de disparar nas diagonais.</p>
+    <p class="overview-text">As posições diagonais a um tiro certeiro são garantidamente água (a única exceção é o corpo do Galeão, devido à sua forma em T). Evitar essas diagonais e as casas contíguas a navios afundados poupa imensos tiros.</p>
+
+    <h3 style="font-family:'Cinzel',serif; font-size:0.9rem; color:var(--gold); letter-spacing:0.15em; margin:1.2rem 0 0.8rem; text-transform:uppercase;">Marcação do Halo de Água</h3>
+    <p class="overview-text">Quando o relatório de uma rajada confirmar que um navio foi afundado, analise os dados do seu Diário de Bordo para identificar exatamente onde reside a carcaça da embarcação. Confirmada a posição exata da carcaça, marque todas as quadrículas contíguas (o halo de 1 posição em redor do navio) como água intransitável. É impossível haver outra embarcação nesse perímetro.</p>
+
+    <h3 style="font-family:'Cinzel',serif; font-size:0.9rem; color:var(--gold); letter-spacing:0.15em; margin:1.2rem 0 0.8rem; text-transform:uppercase;">Declaração de Fim de Jogo</h3>
+    <p class="overview-text">Se a sua frota for toda afundada, declare a derrota com honra. Em contrapartida, seja um vencedor magnânimo se for o inimigo a render-se com os navios todos no fundo do oceano!</p>
+  </div>
+
+  <!-- VIDEOS -->
+  <div class="divider reveal"><span class="divider-icon">✦</span></div>
+  <div class="section reveal">
+    <p class="section-label">Dispatches</p>
+    <h2 class="section-heading">Video Demonstrations</h2>
+    <div class="video-grid">
+      <a href="https://youtu.be/4-C8CIBvnPE" class="video-link" target="_blank">
+        <span class="video-icon">▶</span>
+        <span>Video Demo 1</span>
+      </a>
+      <a href="https://youtu.be/VkcgKGBzlhs" class="video-link" target="_blank">
+        <span class="video-icon">▶</span>
+        <span>Video Demo 2</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- CI/CD -->
+  <div class="divider reveal"><span class="divider-icon">✦</span></div>
+  <div class="section reveal">
+    <p class="section-label">Operations</p>
+    <h2 class="section-heading">CI/CD Workflows</h2>
+    <div class="workflow-card">
+      <p class="workflow-title">⚙ Java with Maven</p>
+      <p class="workflow-desc">Executa automaticamente os testes unitários JUnit a cada push ou pull request para o branch <code style="font-family:'Courier New',monospace; background:rgba(0,0,0,0.3); padding:0.1rem 0.4rem; color:var(--gold-light);">main</code>.</p>
+      <a href="https://github.com/IGE-122994/Battleship2/actions/workflows/javawithmaven.yml" class="btn-secondary" target="_blank">View Workflow →</a>
+    </div>
+  </div>
+
 </div>
 
 <!-- FOOTER -->
 <footer>
   <div class="container">
-    <span class="footer-anchor">⚓</span>
+    <span class="footer-anchor">⚓ &nbsp;·&nbsp; Authors &nbsp;·&nbsp; ⚓</span>
     <p class="footer-text">
-      Maintained by <a href="https://github.com/britoeabreu">@britoeabreu</a>
-      &nbsp;·&nbsp; MIT License
-      &nbsp;·&nbsp; ISCTE-IUL Software Engineering
+      <a href="https://github.com/IGE-110323">@IGE-110323</a>
+      &nbsp;·&nbsp; <a href="https://github.com/IGE-122466">@IGE-122466</a>
+      &nbsp;·&nbsp; <a href="https://github.com/IGE-122475">@IGE-122475</a>
+      &nbsp;·&nbsp; <a href="https://github.com/IGE-122994">@IGE-122994</a>
     </p>
   </div>
 </footer>
