@@ -3,6 +3,9 @@
 
 name: Qodana – Significant Duplication
 
+permissions:
+  contents: read
+
 on:
   push:
     branches: [ "main" ]

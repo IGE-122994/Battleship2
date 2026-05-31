@@ -2,6 +2,8 @@
 # Criado por: 110323 - Francisco Silva
 
 name: Java with Maven
+permissions:
+  contents: read
 
 on:
   push:
