@@ -64,6 +64,40 @@ public class GalleonTest {
 		assertEquals(new Position(7, 5), positions.get(3), "Error: The fourth position is incorrect for SOUTH.");
 		assertEquals(new Position(7, 6), positions.get(4), "Error: The fifth position is incorrect for SOUTH.");
 	}
+	void testConstructorNorth2() {
+		Galleon southGalleon = new Galleon(Compass.NORTH, new Position(5, 5));
+		List<IPosition> positions = southGalleon.getPositions();
+		assertNotNull(southGalleon, "Error: Galleon instance should not be null.");
+		assertEquals(5, positions.size(), "Error: Galleon should have exactly 5 positions.");
+		assertEquals(new Position(5, 5), positions.get(0), "Error: The first position is incorrect for SOUTH.");
+		assertEquals(new Position(6, 5), positions.get(1), "Error: The second position is incorrect for SOUTH.");
+		assertEquals(new Position(7, 4), positions.get(2), "Error: The third position is incorrect for SOUTH.");
+		assertEquals(new Position(7, 5), positions.get(3), "Error: The fourth position is incorrect for SOUTH.");
+		assertEquals(new Position(7, 6), positions.get(4), "Error: The fifth position is incorrect for SOUTH.");
+	}
+
+	void testConstructorWEST() {
+		Galleon southGalleon = new Galleon(Compass.WEST, new Position(5, 5));
+		List<IPosition> positions = southGalleon.getPositions();
+		assertNotNull(southGalleon, "Error: Galleon instance should not be null.");
+		assertEquals(5, positions.size(), "Error: Galleon should have exactly 5 positions.");
+		assertEquals(new Position(5, 5), positions.get(0), "Error: The first position is incorrect for SOUTH.");
+		assertEquals(new Position(6, 5), positions.get(1), "Error: The second position is incorrect for SOUTH.");
+		assertEquals(new Position(7, 4), positions.get(2), "Error: The third position is incorrect for SOUTH.");
+		assertEquals(new Position(7, 5), positions.get(3), "Error: The fourth position is incorrect for SOUTH.");
+		assertEquals(new Position(7, 6), positions.get(4), "Error: The fifth position is incorrect for SOUTH.");
+	}
+	void testConstructorEAST() {
+		Galleon southGalleon = new Galleon(Compass.EAST, new Position(5, 5));
+		List<IPosition> positions = southGalleon.getPositions();
+		assertNotNull(southGalleon, "Error: Galleon instance should not be null.");
+		assertEquals(5, positions.size(), "Error: Galleon should have exactly 5 positions.");
+		assertEquals(new Position(5, 5), positions.get(0), "Error: The first position is incorrect for SOUTH.");
+		assertEquals(new Position(6, 5), positions.get(1), "Error: The second position is incorrect for SOUTH.");
+		assertEquals(new Position(7, 4), positions.get(2), "Error: The third position is incorrect for SOUTH.");
+		assertEquals(new Position(7, 5), positions.get(3), "Error: The fourth position is incorrect for SOUTH.");
+		assertEquals(new Position(7, 6), positions.get(4), "Error: The fifth position is incorrect for SOUTH.");
+	}
 
 	/**
 	 * Test for the stillFloating method (all positions intact).
