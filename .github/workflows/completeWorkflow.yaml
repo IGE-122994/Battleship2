@@ -38,6 +38,9 @@ jobs:
       - name: Gerar JAR
         run: mvn package -DskipTests
 
+      - name: Generate Javadoc
+        run: mvn javadoc:javadoc
+
       - name: Validar qualidade no SonarQube Cloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
